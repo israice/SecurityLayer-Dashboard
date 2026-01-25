@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #00d9ff;
+        }
+        .status {
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .status.connected {
+            background: #0f5132;
+            color: #75e6a0;
+        }
+        .status.disconnected {
+            background: #842029;
+            color: #f5c2c7;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #16213e;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            table-layout: fixed;
+        }
+        th {
+            background: #0f3460;
+            color: #00d9ff;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+        th:hover { background: #1a4a80; }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #0f3460;
+            transition: background-color 0.3s ease;
+        }
+        tr:hover td {
+            background: #1f4068;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+        .last-update {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>CSV Dashboard</h1>
+    <div id="status" class="status disconnected">Connecting...</div>
+    <table id="data-table">
+        <thead id="table-head"></thead>
+        <tbody id="table-body"></tbody>
+    </table>
+    <div id="empty-message" class="empty-message" style="display:none;">No data available</div>
+    <div id="last-update" class="last-update"></div>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        const esc = t => Object.assign(document.createElement('div'), {textContent: t}).innerHTML;
+        let data = { headers: [], rows: [] }, sortCol = 0, sortAsc = false;
+
+        const render = () => {
+            const rows = [...data.rows];
+            if (sortCol >= 0) rows.sort((a, b) => {
+                const [x, y] = [a[sortCol], b[sortCol]];
+                const cmp = isNaN(x) || isNaN(y) ? x.localeCompare(y) : x - y;
+                return sortAsc ? cmp : -cmp;
+            });
+            $('table-head').innerHTML = `<tr>${data.headers.map((h, i) => `<th onclick="sort(${i})">${esc(h)} <span style="opacity:${sortCol === i ? 1 : 0}">${sortAsc ? '▲' : '▼'}</span></th>`).join('')}</tr>`;
+            $('table-body').innerHTML = rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('');
+        };
+
+        const sort = i => { sortAsc = sortCol === i ? !sortAsc : false; sortCol = i; render(); };
+
+        (function connect() {
+            const es = new EventSource('/sse');
+            es.onopen = () => ($('status').className = 'status connected', $('status').textContent = 'Connected');
+            es.onmessage = e => {
+                data = JSON.parse(e.data);
+                const empty = !data.headers.length;
+                $('data-table').style.display = empty ? 'none' : 'table';
+                $('empty-message').style.display = empty ? 'block' : 'none';
+                if (!empty) render();
+                $('last-update').textContent = 'Last update: ' + new Date().toLocaleTimeString();
+            };
+            es.onerror = () => ($('status').className = 'status disconnected', $('status').textContent = 'Reconnecting...', es.close(), setTimeout(connect, 3000));
+        })();
+    </script>
+</body>
+</html>

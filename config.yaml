@@ -1,0 +1,15 @@
+ENCODING: utf-8
+
+ROUTES:
+  update_dashboard: /update-dashboard
+
+# Сервер (DASHBOARD)
+DASHBOARD:
+  HOST: 0.0.0.0
+  PORT: 5000
+  SAVE_FILE: AB_saved_on_server.csv
+
+# Клиент (AGENT)
+AGENT:
+  SERVER_URL: https://test.domain.com
+  CSV_FILE: AA_csv_to_server.csv
