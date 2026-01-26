@@ -14,6 +14,14 @@ echo "Resetting to origin/master..."
 git reset --hard origin/master
 
 echo "Rebuilding and restarting container..."
-docker-compose --project-name securitylayer -f docker-compose.yml up -d --build --force-recreate
+# Запускаем docker-compose в ОТДЕЛЬНОМ контейнере, который не будет убит
+docker run -d --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /home/administrator/projects/SecurityLayer:/repo \
+  -w /repo \
+  docker/compose:latest \
+  --project-name securitylayer \
+  -f docker-compose.yml \
+  up -d --build --force-recreate
 
 echo "=== Deploy completed ==="
