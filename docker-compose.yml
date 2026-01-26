@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   dashboard:
     build:
@@ -7,7 +5,7 @@ services:
       dockerfile: DASHBOARD/Dockerfile
     container_name: security-layer-dashboard
     ports:
-      - "5000:5000"
+      - "5008:5000"
     volumes:
       - dashboard-data:/app/DASHBOARD
     restart: unless-stopped
