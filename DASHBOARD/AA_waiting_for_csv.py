@@ -198,11 +198,11 @@ def github_webhook():
     return 'Deploy started', 200
 
 
-if __name__ == '__main__':
-    # Запуск file watcher в отдельном потоке
-    watcher_thread = threading.Thread(target=file_watcher, daemon=True)
-    watcher_thread.start()
+# Запуск file watcher в отдельном потоке (работает и с gunicorn, и напрямую)
+watcher_thread = threading.Thread(target=file_watcher, daemon=True)
+watcher_thread.start()
 
+if __name__ == '__main__':
     print(f'Server running on http://{HOST}:{PORT}')
     print(f'Dashboard: http://localhost:{PORT}/')
     app.run(host=HOST, port=PORT, threaded=True)

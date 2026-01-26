@@ -27,4 +27,4 @@ WORKDIR /app/DASHBOARD
 
 EXPOSE 5000
 
-CMD ["python", "AA_waiting_for_csv.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "4", "AA_waiting_for_csv:app"]
