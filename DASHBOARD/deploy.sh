@@ -13,11 +13,7 @@ git fetch origin master
 echo "Resetting to origin/master..."
 git reset --hard origin/master
 
-echo "Stopping old container..."
-docker stop security-layer-dashboard 2>/dev/null || true
-docker rm security-layer-dashboard 2>/dev/null || true
-
 echo "Rebuilding and restarting container..."
-docker-compose -f docker-compose.yml up -d --build
+docker-compose --project-name securitylayer -f docker-compose.yml up -d --build --force-recreate
 
 echo "=== Deploy completed ==="
