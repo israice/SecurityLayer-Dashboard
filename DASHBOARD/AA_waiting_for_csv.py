@@ -6,6 +6,9 @@ import json
 import threading
 import queue
 import time
+import hmac
+import hashlib
+import subprocess
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(script_dir, '..', 'config.yaml')
@@ -139,6 +142,60 @@ def sse():
 def index():
     """Главная страница"""
     return send_file('index.html')
+
+
+# ==================== GitHub Webhook ====================
+
+def verify_github_signature(payload, signature):
+    """Проверка HMAC-SHA256 подписи от GitHub"""
+    if not signature:
+        return False
+    # Секрет из переменной окружения (безопаснее чем в config)
+    secret = os.environ.get('GITHUB_WEBHOOK_SECRET', '').encode()
+    expected = 'sha256=' + hmac.new(secret, payload, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected, signature)
+
+
+def run_deploy():
+    """Выполняет деплой в фоне"""
+    repo_path = config.get('WEBHOOK', {}).get('REPO_PATH', '/repo')
+    deploy_script = '/app/DASHBOARD/deploy.sh'
+    print(f'Starting deploy from {repo_path}...')
+    try:
+        result = subprocess.run(
+            [deploy_script],
+            cwd=repo_path,
+            capture_output=True,
+            text=True
+        )
+        print(f'Deploy stdout: {result.stdout}')
+        if result.stderr:
+            print(f'Deploy stderr: {result.stderr}')
+        print(f'Deploy finished with code {result.returncode}')
+    except Exception as e:
+        print(f'Deploy error: {e}')
+
+
+@app.route('/webhook/github', methods=['POST'])
+def github_webhook():
+    """Endpoint для GitHub webhook - автодеплой при push"""
+    signature = request.headers.get('X-Hub-Signature-256')
+    if not verify_github_signature(request.data, signature):
+        print('Webhook: Invalid signature')
+        return 'Invalid signature', 401
+
+    payload = request.json
+    ref = payload.get('ref', '')
+    allowed_branch = config.get('WEBHOOK', {}).get('ALLOWED_BRANCH', 'refs/heads/master')
+
+    if ref != allowed_branch:
+        print(f'Webhook: Ignored branch {ref}')
+        return f'Ignored: {ref}', 200
+
+    print(f'Webhook: Push to {ref} - starting deploy')
+    # Запуск в фоновом потоке чтобы вернуть 200 до перезапуска контейнера
+    threading.Thread(target=run_deploy, daemon=True).start()
+    return 'Deploy started', 200
 
 
 if __name__ == '__main__':

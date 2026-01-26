@@ -13,3 +13,8 @@ DASHBOARD:
 AGENT:
   SERVER_URL: https://sec.weforks.org
   CSV_FILE: AA_csv_to_server.csv
+
+# GitHub Webhook для автообновления
+WEBHOOK:
+  ALLOWED_BRANCH: "refs/heads/master"
+  REPO_PATH: "/repo"
