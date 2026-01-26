@@ -21,6 +21,7 @@ PORT = config['DASHBOARD']['PORT']
 SAVE_FILE = config['DASHBOARD']['SAVE_FILE']
 ENCODING = config['ENCODING']
 ROUTE = config['ROUTES']['update_dashboard']
+REPO_PATH = config['WEBHOOK']['REPO_PATH']  # "/repo" — примонтированный том с актуальным кодом
 
 app = Flask(__name__)
 
@@ -150,23 +151,22 @@ def sse():
 @app.route('/')
 def index():
     """Главная страница"""
-    return send_file('index.html')
+    return send_file(os.path.join(REPO_PATH, 'DASHBOARD', 'index.html'))
 
 
 @app.route('/version-check.js')
 def version_check_js():
-    return send_file('version-check.js')
+    return send_file(os.path.join(REPO_PATH, 'DASHBOARD', 'version-check.js'))
 
 
 @app.route('/version.md')
 def version_md():
-    version_path = os.path.join(script_dir, '..', 'version.md')
-    return send_file(os.path.abspath(version_path))
+    return send_file(os.path.join(REPO_PATH, 'version.md'))
 
 
 @app.route('/robots.txt')
 def robots():
-    return send_file('robots.txt')
+    return send_file(os.path.join(REPO_PATH, 'DASHBOARD', 'robots.txt'))
 
 
 # ==================== GitHub Webhook ====================
