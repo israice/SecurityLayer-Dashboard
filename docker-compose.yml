@@ -10,8 +10,8 @@ services:
       - dashboard-data:/app/DASHBOARD
       # Docker socket для автодеплоя (контейнер может управлять Docker)
       - /var/run/docker.sock:/var/run/docker.sock
-      # Git репозиторий на хосте (ИЗМЕНИТЕ ПУТЬ на реальный)
-      - /opt/testing-csv-to-server:/repo
+      # Git репозиторий на хосте
+      - /home/administrator/projects/SecurityLayer:/repo
     restart: unless-stopped
     env_file:
       - .env
