@@ -156,14 +156,14 @@ def verify_github_signature(payload, signature):
     if not signature:
         return False
     # Секрет из переменной окружения (безопаснее чем в config)
-    secret = os.environ.get('GITHUB_WEBHOOK_SECRET', '').encode()
+    secret = os.environ['GITHUB_WEBHOOK_SECRET'].encode()
     expected = 'sha256=' + hmac.new(secret, payload, hashlib.sha256).hexdigest()
     return hmac.compare_digest(expected, signature)
 
 
 def run_deploy():
     """Выполняет деплой в фоне"""
-    repo_path = config.get('WEBHOOK', {}).get('REPO_PATH', '/repo')
+    repo_path = config['WEBHOOK']['REPO_PATH']
     deploy_script = '/app/DASHBOARD/deploy.sh'
     print(f'Starting deploy from {repo_path}...')
     try:
@@ -190,8 +190,8 @@ def github_webhook():
         return 'Invalid signature', 401
 
     payload = request.json
-    ref = payload.get('ref', '')
-    allowed_branch = config.get('WEBHOOK', {}).get('ALLOWED_BRANCH', 'refs/heads/master')
+    ref = payload['ref']
+    allowed_branch = config['WEBHOOK']['ALLOWED_BRANCH']
 
     if ref != allowed_branch:
         print(f'Webhook: Ignored branch {ref}')
