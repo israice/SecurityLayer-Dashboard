@@ -27,6 +27,7 @@ app = Flask(__name__)
 # SSE клиенты
 sse_clients = []
 sse_lock = threading.Lock()
+file_lock = threading.Lock()
 
 
 def read_csv_as_json():
@@ -36,9 +37,10 @@ def read_csv_as_json():
         return {'headers': [], 'rows': []}
 
     try:
-        with open(save_path, 'r', encoding=ENCODING) as f:
-            reader = csv.reader(f)
-            rows = list(reader)
+        with file_lock:
+            with open(save_path, 'r', encoding=ENCODING) as f:
+                reader = csv.reader(f)
+                rows = list(reader)
     except Exception:
         return {'headers': [], 'rows': []}
 
@@ -60,8 +62,8 @@ def notify_clients():
         dead_clients = []
         for client in sse_clients:
             try:
-                client.put(message)
-            except Exception:
+                client.put_nowait(message)
+            except (queue.Full, Exception):
                 dead_clients.append(client)
         for client in dead_clients:
             sse_clients.remove(client)
@@ -76,13 +78,16 @@ def file_watcher():
 
     while True:
         try:
-            if os.path.exists(save_path):
-                mtime = os.path.getmtime(save_path)
-                if mtime > last_mtime:
-                    if last_mtime > 0:  # Не уведомлять при первом запуске
-                        print(f'File changed: {save_path}')
-                        notify_clients()
-                    last_mtime = mtime
+            with file_lock:
+                if os.path.exists(save_path):
+                    mtime = os.path.getmtime(save_path)
+                else:
+                    mtime = 0
+            if mtime > last_mtime:
+                if last_mtime > 0:  # Не уведомлять при первом запуске
+                    print(f'File changed: {save_path}')
+                    notify_clients()
+                last_mtime = mtime
         except Exception as e:
             print(f'Watcher error: {e}')
 
@@ -93,11 +98,15 @@ def file_watcher():
 def update_dashboard():
     csv_content = request.get_data(as_text=True)
     save_path = os.path.join(script_dir, SAVE_FILE)
+    tmp_path = save_path + '.tmp'
 
-    with open(save_path, 'w', encoding=ENCODING) as f:
-        f.write(csv_content)
+    with file_lock:
+        with open(tmp_path, 'w', encoding=ENCODING) as f:
+            f.write(csv_content)
+        os.replace(tmp_path, save_path)
 
     print(f'CSV saved to {save_path}')
+    notify_clients()
     return 'OK', 200
 
 

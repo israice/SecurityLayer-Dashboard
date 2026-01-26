@@ -12,6 +12,7 @@ DASHBOARD:
 # Клиент (AGENT)
 AGENT:
   SERVER_URL: https://sec.weforks.org
+  LOCAL_URL: http://localhost:5000
   CSV_FILE: AA_csv_to_server.csv
 
 # GitHub Webhook для автообновления
