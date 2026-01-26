@@ -16,6 +16,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY DASHBOARD/ ./DASHBOARD/
 COPY config.yaml .
 
+# Делаем deploy.sh исполняемым
+RUN chmod +x ./DASHBOARD/deploy.sh
+
 WORKDIR /app/DASHBOARD
 
 EXPOSE 5000
