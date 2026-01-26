@@ -153,6 +153,17 @@ def index():
     return send_file('index.html')
 
 
+@app.route('/version-check.js')
+def version_check_js():
+    return send_file('version-check.js')
+
+
+@app.route('/version.md')
+def version_md():
+    version_path = os.path.join(script_dir, '..', 'version.md')
+    return send_file(os.path.abspath(version_path))
+
+
 @app.route('/robots.txt')
 def robots():
     return send_file('robots.txt')
