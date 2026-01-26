@@ -7,7 +7,6 @@ services:
     ports:
       - "5008:5000"
     volumes:
-      - dashboard-data:/app/DASHBOARD
       # Docker socket для автодеплоя (контейнер может управлять Docker)
       - /var/run/docker.sock:/var/run/docker.sock
       # Git репозиторий на хосте
@@ -17,6 +16,3 @@ services:
       - .env
     environment:
       - PYTHONUNBUFFERED=1
-
-volumes:
-  dashboard-data:
