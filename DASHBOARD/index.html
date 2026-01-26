@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV Dashboard</title>
+    <title>Admin Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -22,21 +22,46 @@
             margin-bottom: 20px;
             color: #00d9ff;
         }
-        .status {
-            text-align: center;
+        .toolbar {
+            display: flex;
+            align-items: center;
             margin-bottom: 15px;
-            padding: 8px;
-            border-radius: 5px;
-            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: #16213e;
+            gap: 6px;
         }
-        .status.connected {
-            background: #0f5132;
-            color: #75e6a0;
+        .toolbar-spacer { flex: 1; }
+        .toolbar .status {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            white-space: nowrap;
         }
-        .status.disconnected {
-            background: #842029;
-            color: #f5c2c7;
+        .status.connected { background: #0f5132; color: #75e6a0; }
+        .status.disconnected { background: #842029; color: #f5c2c7; }
+        .toolbar-btn {
+            background: #0f3460;
+            color: #eee;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background .2s;
         }
+        .toolbar-btn:hover { background: #1a4a80; }
+        .settings-btn {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 6px;
+            line-height: 1;
+            transition: color .2s;
+        }
+        .settings-btn:hover { color: #00d9ff; }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -75,23 +100,21 @@
             color: #666;
             font-style: italic;
         }
-        .last-update {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 12px;
-            color: #666;
-        }
     </style>
 </head>
 <body>
-    <h1>CSV Dashboard</h1>
-    <div id="status" class="status disconnected">Connecting...</div>
+    <h1>Admin Dashboard</h1>
+    <div class="toolbar">
+        <!-- добавьте кнопки здесь -->
+        <div class="toolbar-spacer"></div>
+        <button class="settings-btn" title="Settings">&#9881;</button>
+        <div id="status" class="status disconnected">Connecting...</div>
+    </div>
     <table id="data-table">
         <thead id="table-head"></thead>
         <tbody id="table-body"></tbody>
     </table>
     <div id="empty-message" class="empty-message" style="display:none;">No data available</div>
-    <div id="last-update" class="last-update"></div>
 
     <script>
         const $ = id => document.getElementById(id);
@@ -113,14 +136,14 @@
 
         (function connect() {
             const es = new EventSource('/sse');
-            es.onopen = () => ($('status').className = 'status connected', $('status').textContent = 'Connected');
+            es.onopen = () => ($('status').className = 'status connected', $('status').textContent = new Date().toLocaleTimeString('ru'));
             es.onmessage = e => {
                 data = JSON.parse(e.data);
                 const empty = !data.headers.length;
                 $('data-table').style.display = empty ? 'none' : 'table';
                 $('empty-message').style.display = empty ? 'block' : 'none';
                 if (!empty) render();
-                $('last-update').textContent = 'Last update: ' + new Date().toLocaleTimeString();
+                $('status').textContent = new Date().toLocaleTimeString('ru');
             };
             es.onerror = () => ($('status').className = 'status disconnected', $('status').textContent = 'Reconnecting...', es.close(), setTimeout(connect, 3000));
         })();
