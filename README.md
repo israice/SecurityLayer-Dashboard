@@ -10,3 +10,5 @@ docker compose down && docker compose up -d --build
 
 git pull
 docker compose up -d --build --force-recreate
+
+docker logs security-layer-dashboard -f
