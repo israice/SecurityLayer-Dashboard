@@ -144,6 +144,11 @@ def index():
     return send_file('index.html')
 
 
+@app.route('/robots.txt')
+def robots():
+    return send_file('robots.txt')
+
+
 # ==================== GitHub Webhook ====================
 
 def verify_github_signature(payload, signature):
