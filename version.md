@@ -7,7 +7,7 @@ Copy-Item $env:TEMP\.env.backup .env -Force
 git push origin master --force
 
 git add .
-git commit -m "v0.0.11 - deploy test 7"
+git commit -m "v0.0.12 - version test"
 git push
 
 v0.0.1 - dashboard SSE
@@ -21,3 +21,4 @@ v0.0.8 - server test
 v0.0.9 - added auth and landing page 
 v0.0.10 - deploy fixed 
 v0.0.11 - deploy test
+v0.0.12 - version test
