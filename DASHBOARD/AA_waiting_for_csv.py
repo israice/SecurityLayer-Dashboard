@@ -329,7 +329,7 @@ def run_deploy():
     print(f'Starting deploy from {repo_path}...')
     try:
         result = subprocess.run(
-            [deploy_script],
+            ['bash', deploy_script],
             cwd=repo_path,
             capture_output=True,
             text=True
