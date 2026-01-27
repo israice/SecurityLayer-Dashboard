@@ -18,7 +18,7 @@ REPO_OWNER=$(stat -c '%u:%g' /repo)
 chown -R "$REPO_OWNER" /repo
 
 # Установить новые зависимости (если requirements.txt изменился)
-pip install -r /app/requirements.txt --quiet
+pip install -r /app/requirements.txt --quiet --root-user-action=ignore
 
 # Перезагрузить gunicorn (PID 1) — workers подхватят новый код
 echo "Reloading gunicorn..."
