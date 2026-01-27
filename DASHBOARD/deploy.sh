@@ -13,6 +13,10 @@ git fetch origin master
 echo "Resetting to origin/master..."
 git reset --hard origin/master
 
+# Вернуть владельца репозитория (контейнер работает как root)
+REPO_OWNER=$(stat -c '%u:%g' /repo)
+chown -R "$REPO_OWNER" /repo
+
 echo "Rebuilding container..."
 docker-compose -f /repo/docker-compose.yml up -d --build
 
