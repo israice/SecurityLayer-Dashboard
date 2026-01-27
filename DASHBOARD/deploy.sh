@@ -18,6 +18,6 @@ REPO_OWNER=$(stat -c '%u:%g' /repo)
 chown -R "$REPO_OWNER" /repo
 
 echo "Rebuilding container..."
-docker-compose -f /repo/docker-compose.yml up -d --build
+docker-compose -f /repo/docker-compose.yml up -d --build --force-recreate
 
 echo "=== Deploy completed ==="
