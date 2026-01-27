@@ -300,6 +300,11 @@ def version_md():
     return send_file(os.path.join(REPO_ROOT, 'version.md'))
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_file(os.path.join(REPO_ROOT, 'DASHBOARD', 'favicon.ico'))
+
+
 @app.route('/robots.txt')
 def robots():
     return send_file(os.path.join(REPO_ROOT, 'DASHBOARD', 'robots.txt'))
