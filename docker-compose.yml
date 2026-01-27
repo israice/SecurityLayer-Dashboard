@@ -9,8 +9,10 @@ services:
     volumes:
       # Docker socket для автодеплоя (контейнер может управлять Docker)
       - /var/run/docker.sock:/var/run/docker.sock
-      # Git репозиторий на хосте
+      # Git репозиторий на хосте (для git-операций в deploy.sh)
       - /home/administrator/projects/SecurityLayer:/repo
+      # Код проекта — монтируется поверх образа, изменения применяются без пересборки
+      - /home/administrator/projects/SecurityLayer:/app
     restart: unless-stopped
     env_file:
       - .env

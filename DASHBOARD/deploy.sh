@@ -17,7 +17,11 @@ git reset --hard origin/master
 REPO_OWNER=$(stat -c '%u:%g' /repo)
 chown -R "$REPO_OWNER" /repo
 
-echo "Rebuilding container..."
-docker-compose -f /repo/docker-compose.yml up -d --build --force-recreate
+# Установить новые зависимости (если requirements.txt изменился)
+pip install -r /app/requirements.txt --quiet
+
+# Перезагрузить gunicorn (PID 1) — workers подхватят новый код
+echo "Reloading gunicorn..."
+kill -HUP 1
 
 echo "=== Deploy completed ==="
