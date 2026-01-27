@@ -1,0 +1,143 @@
+/* --- Auth Card --- */
+.auth-card {
+    width: 100%;
+    background: var(--bg-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem 2rem;
+    box-shadow: var(--shadow-lg);
+}
+
+/* --- Tabs --- */
+.tabs {
+    display: flex;
+    gap: 0;
+    margin: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-out);
+    margin-bottom: -1px;
+}
+
+.tab-btn:hover {
+    color: var(--text-secondary);
+}
+
+.tab-btn--active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+/* --- Forms --- */
+.form {
+    display: none;
+    opacity: 0;
+}
+
+.form.active {
+    display: block;
+    animation: pageEnter 0.3s var(--ease-out) both;
+}
+
+/* --- Input Groups (Floating Label) --- */
+.input-group {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 1rem 0.875rem 0.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: all var(--duration-fast) ease;
+}
+
+.input-group label {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8125rem;
+    color: var(--text-tertiary);
+    pointer-events: none;
+    transition: all var(--duration-fast) ease;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+    top: 0.5rem;
+    transform: translateY(0);
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.input-group input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+    background: var(--bg-secondary);
+}
+
+.input-group input.input-error {
+    border-color: var(--error);
+    background: var(--error-bg);
+    box-shadow: 0 0 0 3px var(--error-border);
+}
+
+.input-group input.input-error + label {
+    color: var(--error);
+}
+
+/* --- Messages --- */
+.msg {
+    margin-top: 1rem;
+    padding: 0;
+    text-align: center;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+    border-radius: var(--radius-sm);
+    transition: all var(--duration-normal) var(--ease-out);
+    overflow: hidden;
+    max-height: 0;
+}
+
+.msg.error,
+.msg.success {
+    padding: 0.75rem;
+    max-height: 100px;
+}
+
+.msg.error {
+    background: var(--error-bg);
+    color: var(--error);
+    border: 1px solid var(--error-border);
+}
+
+.msg.success {
+    background: var(--success-bg);
+    color: var(--success);
+    border: 1px solid var(--success-border);
+}

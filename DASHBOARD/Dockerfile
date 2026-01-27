@@ -18,6 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем приложение
 COPY DASHBOARD/ ./DASHBOARD/
+COPY DATA/ ./DATA/
 COPY config.yaml .
 
 # Делаем deploy.sh исполняемым

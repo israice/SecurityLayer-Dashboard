@@ -1,28 +1,46 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>SecurityLayer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/shared/theme.css">
+    <link rel="stylesheet" href="/static/landing-page/landing.css">
+    <link rel="stylesheet" href="/static/login-page/auth.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
+        /* ---- Dashboard body override ---- */
+        body.show-dashboard {
+            background-color: #1a1a2e;
+            background-image: none;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #1a1a2e;
+            font-size: 16px;
             color: #eee;
-            padding: 20px;
-            min-height: 100vh;
         }
-        h1 {
+        body.show-dashboard::before,
+        body.show-dashboard::after {
+            display: none;
+        }
+
+        /* ---- Dashboard page ---- */
+        #dashboard-page {
+            max-width: 100%;
+            width: 100%;
+            padding: 20px;
+        }
+        #dashboard-page.active {
+            display: block;
+        }
+        #dashboard-page h1 {
             text-align: center;
             margin-bottom: 20px;
             color: #00d9ff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: normal;
         }
-        .toolbar {
+        #dashboard-page .toolbar {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
@@ -31,16 +49,16 @@
             background: #16213e;
             gap: 6px;
         }
-        .toolbar-spacer { flex: 1; }
-        .toolbar .status {
+        #dashboard-page .toolbar-spacer { flex: 1; }
+        #dashboard-page .toolbar .status {
             padding: 4px 12px;
             border-radius: 4px;
             font-size: 13px;
             white-space: nowrap;
         }
-        .status.connected { background: #0f5132; color: #75e6a0; }
-        .status.disconnected { background: #842029; color: #f5c2c7; }
-        .toolbar-btn {
+        #dashboard-page .status.connected { background: #0f5132; color: #75e6a0; }
+        #dashboard-page .status.disconnected { background: #842029; color: #f5c2c7; }
+        #dashboard-page .toolbar-btn {
             background: #0f3460;
             color: #eee;
             border: none;
@@ -50,8 +68,8 @@
             cursor: pointer;
             transition: background .2s;
         }
-        .toolbar-btn:hover { background: #1a4a80; }
-        .settings-btn {
+        #dashboard-page .toolbar-btn:hover { background: #1a4a80; }
+        #dashboard-page .settings-btn {
             background: none;
             border: none;
             color: #888;
@@ -61,8 +79,8 @@
             line-height: 1;
             transition: color .2s;
         }
-        .settings-btn:hover { color: #00d9ff; }
-        table {
+        #dashboard-page .settings-btn:hover { color: #00d9ff; }
+        #dashboard-page table {
             width: 100%;
             border-collapse: collapse;
             background: #16213e;
@@ -71,7 +89,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             table-layout: fixed;
         }
-        th {
+        #dashboard-page th {
             background: #0f3460;
             color: #00d9ff;
             padding: 15px 12px;
@@ -82,80 +100,318 @@
             letter-spacing: 1px;
             cursor: pointer;
         }
-        th:hover { background: #1a4a80; }
-        td {
+        #dashboard-page th:hover { background: #1a4a80; }
+        #dashboard-page td {
             padding: 12px;
             border-bottom: 1px solid #0f3460;
             transition: background-color 0.3s ease;
         }
-        tr:hover td {
-            background: #1f4068;
-        }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        .version {
+        #dashboard-page tr:hover td { background: #1f4068; }
+        #dashboard-page tr:last-child td { border-bottom: none; }
+        #dashboard-page .version {
             position: fixed;
             top: 6px;
             left: 10px;
             font-size: 11px;
             color: #75e6a0;
         }
-        .empty-message {
+        #dashboard-page .empty-message {
             text-align: center;
             padding: 40px;
             color: #666;
             font-style: italic;
         }
+        #dashboard-page .org-label {
+            color: #00d9ff;
+            font-size: 13px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
-    <div class="version">v0.0.6</div>
-    <script src="version-check.js"></script>
-    <h1>Admin Dashboard</h1>
-    <div class="toolbar">
-        <!-- добавьте кнопки здесь -->
-        <div class="toolbar-spacer"></div>
-        <button class="settings-btn" title="Settings">&#9881;</button>
-        <div id="status" class="status disconnected">Connecting...</div>
-    </div>
-    <table id="data-table">
-        <thead id="table-head"></thead>
-        <tbody id="table-body"></tbody>
-    </table>
-    <div id="empty-message" class="empty-message" style="display:none;">No data available</div>
 
+    <!-- ====== Landing Page ====== -->
+    <div id="landing-page" class="page">
+        <div class="landing-content">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L3 7v6c0 5.25 3.83 10.14 9 11.27C17.17 23.14 21 18.25 21 13V7l-9-5z"/>
+                    <path d="M9 12l2 2 4-4"/>
+                </svg>
+            </div>
+            <h1 class="page-title">SecurityLayer</h1>
+            <p class="page-subtitle">Secure authentication for your organization</p>
+            <button id="btn-get-started" class="btn btn-primary btn-large">Get Started</button>
+        </div>
+    </div>
+
+    <!-- ====== Auth Page ====== -->
+    <div id="auth-page" class="page">
+        <div class="auth-card">
+            <h2 class="page-title">SecurityLayer</h2>
+            <div class="tabs">
+                <button class="tab-btn tab-btn--active" data-target="login">Login</button>
+                <button class="tab-btn" data-target="register">Register</button>
+            </div>
+
+            <form id="login" class="form active" autocomplete="off">
+                <div class="input-group">
+                    <input id="l-email" type="email" placeholder=" " required>
+                    <label for="l-email">Email</label>
+                </div>
+                <div class="input-group">
+                    <input id="l-pass" type="password" placeholder=" " required>
+                    <label for="l-pass">Password</label>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-text">Login</span>
+                    <span class="btn-loader"></span>
+                </button>
+                <div id="l-msg" class="msg"></div>
+            </form>
+
+            <form id="register" class="form" autocomplete="off">
+                <div class="input-group">
+                    <input id="r-org" placeholder=" " required>
+                    <label for="r-org">Organization</label>
+                </div>
+                <div class="input-group">
+                    <input id="r-name" placeholder=" " required>
+                    <label for="r-name">Name</label>
+                </div>
+                <div class="input-group">
+                    <input id="r-email" type="email" placeholder=" " required>
+                    <label for="r-email">Email</label>
+                </div>
+                <div class="input-group">
+                    <input id="r-pass" type="password" placeholder=" " required>
+                    <label for="r-pass">Password</label>
+                </div>
+                <div class="input-group">
+                    <input id="r-pass2" type="password" placeholder=" " required>
+                    <label for="r-pass2">Confirm Password</label>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-text">Register</span>
+                    <span class="btn-loader"></span>
+                </button>
+                <div id="r-msg" class="msg"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ====== Dashboard Page ====== -->
+    <div id="dashboard-page" class="page">
+        <div class="version">v0.0.6</div>
+        <div id="org-name" class="org-label" style="text-align:center;"></div>
+        <h1>Admin Dashboard</h1>
+        <div class="toolbar">
+            <div class="toolbar-spacer"></div>
+            <button class="settings-btn" title="Settings">&#9881;</button>
+            <button id="btn-logout" class="toolbar-btn" title="Logout">Logout</button>
+            <div id="status" class="status disconnected">Connecting...</div>
+        </div>
+        <table id="data-table">
+            <thead id="table-head"></thead>
+            <tbody id="table-body"></tbody>
+        </table>
+        <div id="empty-message" class="empty-message" style="display:none;">No data available</div>
+    </div>
+
+    <script src="version-check.js"></script>
     <script>
         const $ = id => document.getElementById(id);
+        const $$ = sel => document.querySelectorAll(sel);
         const esc = t => Object.assign(document.createElement('div'), {textContent: t}).innerHTML;
-        let data = { headers: [], rows: [] }, sortCol = 0, sortAsc = false;
+
+        // ==================== Page Routing ====================
+
+        let sseConnection = null;
+        let sseReconnectTimer = null;
+
+        const showPage = (pageId) => {
+            $$('.page').forEach(p => p.classList.remove('active'));
+            $(pageId).classList.add('active');
+            if (pageId === 'dashboard-page') {
+                document.body.classList.add('show-dashboard');
+                startSSE();
+            } else {
+                document.body.classList.remove('show-dashboard');
+                stopSSE();
+            }
+        };
+
+        // ==================== Auth: Tab Switching ====================
+
+        const show = id => {
+            $$('.form').forEach(f => {
+                f.classList.remove('active');
+                const btn = f.querySelector('button[type="submit"]');
+                if (btn) setLoading(btn, false);
+            });
+            $$('.input-group input').forEach(i => i.classList.remove('input-error'));
+            const form = $(id);
+            form.style.animation = 'none';
+            form.offsetHeight;
+            form.style.animation = '';
+            form.classList.add('active');
+            $$('.tab-btn').forEach(t => t.classList.remove('tab-btn--active'));
+            const tab = document.querySelector(`.tab-btn[data-target="${id}"]`);
+            if (tab) tab.classList.add('tab-btn--active');
+            ['l-msg', 'r-msg'].forEach(m => { $(m).className = 'msg'; $(m).textContent = ''; });
+        };
+
+        // ==================== Auth: Helpers ====================
+
+        const setLoading = (btn, loading) => {
+            btn.disabled = loading;
+            btn.classList.toggle('btn--loading', loading);
+        };
+
+        const showMsg = (el, type, text) => { el.className = `msg ${type}`; el.textContent = text; };
+
+        const checkField = async (inputId, fieldName) => {
+            const input = $(inputId), value = input.value.trim();
+            if (!value) { input.classList.remove('input-error'); return; }
+            try {
+                const res = await fetch('/api/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ field: fieldName, value })
+                });
+                const data = await res.json();
+                input.classList.toggle('input-error', data.exists);
+            } catch (e) { }
+        };
+
+        // ==================== Auth: Login ====================
+
+        const doLogin = async () => {
+            const m = $('l-msg'), btn = document.querySelector('#login button[type="submit"]');
+            showMsg(m, '', '');
+            setLoading(btn, true);
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: $('l-email').value.trim(), password: $('l-pass').value })
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    showMsg(m, 'success', 'Success!');
+                    sessionStorage.setItem('user', JSON.stringify(data.user));
+                    showDashboard(data.user);
+                } else { showMsg(m, 'error', data.error); setLoading(btn, false); }
+            } catch (e) { showMsg(m, 'error', 'Connection error'); setLoading(btn, false); }
+        };
+
+        // ==================== Auth: Register ====================
+
+        const doRegister = async () => {
+            const m = $('r-msg'), btn = document.querySelector('#register button[type="submit"]');
+            const org = $('r-org').value.trim(), name = $('r-name').value.trim();
+            const email = $('r-email').value.trim(), pass = $('r-pass').value, pass2 = $('r-pass2').value;
+            showMsg(m, '', '');
+
+            if (org.length < 2) return showMsg(m, 'error', 'Organization must be at least 2 characters');
+            if (name.length < 2) return showMsg(m, 'error', 'Name must be at least 2 characters');
+            if (pass.length < 3) return showMsg(m, 'error', 'Password must be at least 3 characters');
+            if (pass !== pass2) return showMsg(m, 'error', 'Passwords do not match');
+
+            setLoading(btn, true);
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orgName: org, userName: name, email, password: pass })
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    showMsg(m, 'success', 'Registered!');
+                    sessionStorage.setItem('user', JSON.stringify(data.user));
+                    showDashboard(data.user);
+                } else { showMsg(m, 'error', data.error); setLoading(btn, false); }
+            } catch (e) { showMsg(m, 'error', 'Connection error'); setLoading(btn, false); }
+        };
+
+        // ==================== Dashboard ====================
+
+        const showDashboard = (user) => {
+            $('org-name').textContent = user.ORG_NAME || '';
+            showPage('dashboard-page');
+        };
+
+        const logout = () => {
+            sessionStorage.clear();
+            showPage('landing-page');
+        };
+
+        let tableData = { headers: [], rows: [] }, sortCol = 0, sortAsc = false;
 
         const render = () => {
-            const rows = [...data.rows];
+            const rows = [...tableData.rows];
             if (sortCol >= 0) rows.sort((a, b) => {
                 const [x, y] = [a[sortCol], b[sortCol]];
                 const cmp = isNaN(x) || isNaN(y) ? x.localeCompare(y) : x - y;
                 return sortAsc ? cmp : -cmp;
             });
-            $('table-head').innerHTML = `<tr>${data.headers.map((h, i) => `<th onclick="sort(${i})">${esc(h)} <span style="opacity:${sortCol === i ? 1 : 0}">${sortAsc ? '▲' : '▼'}</span></th>`).join('')}</tr>`;
-            $('table-body').innerHTML = rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('');
+            $('table-head').innerHTML = `<tr>${tableData.headers.map((h, i) =>
+                `<th onclick="sort(${i})">${esc(h)} <span style="opacity:${sortCol === i ? 1 : 0}">${sortAsc ? '▲' : '▼'}</span></th>`
+            ).join('')}</tr>`;
+            $('table-body').innerHTML = rows.map(r =>
+                `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`
+            ).join('');
         };
 
         const sort = i => { sortAsc = sortCol === i ? !sortAsc : false; sortCol = i; render(); };
 
-        (function connect() {
+        const startSSE = () => {
+            if (sseConnection) return;
             const es = new EventSource('/sse');
-            es.onopen = () => ($('status').className = 'status connected', $('status').textContent = new Date().toLocaleTimeString('ru'));
+            sseConnection = es;
+            es.onopen = () => {
+                $('status').className = 'status connected';
+                $('status').textContent = new Date().toLocaleTimeString('ru');
+            };
             es.onmessage = e => {
-                data = JSON.parse(e.data);
-                const empty = !data.headers.length;
+                tableData = JSON.parse(e.data);
+                const empty = !tableData.headers.length;
                 $('data-table').style.display = empty ? 'none' : 'table';
                 $('empty-message').style.display = empty ? 'block' : 'none';
                 if (!empty) render();
                 $('status').textContent = new Date().toLocaleTimeString('ru');
             };
-            es.onerror = () => ($('status').className = 'status disconnected', $('status').textContent = 'Reconnecting...', es.close(), setTimeout(connect, 3000));
-        })();
+            es.onerror = () => {
+                $('status').className = 'status disconnected';
+                $('status').textContent = 'Reconnecting...';
+                es.close();
+                sseConnection = null;
+                sseReconnectTimer = setTimeout(startSSE, 3000);
+            };
+        };
+
+        const stopSSE = () => {
+            if (sseReconnectTimer) { clearTimeout(sseReconnectTimer); sseReconnectTimer = null; }
+            if (sseConnection) { sseConnection.close(); sseConnection = null; }
+        };
+
+        // ==================== Init ====================
+
+        $('btn-get-started').addEventListener('click', () => { showPage('auth-page'); show('login'); });
+        $('btn-logout').addEventListener('click', logout);
+        $$('.tab-btn').forEach(btn => btn.addEventListener('click', () => show(btn.dataset.target)));
+        $('login').addEventListener('submit', e => { e.preventDefault(); doLogin(); });
+        $('register').addEventListener('submit', e => { e.preventDefault(); doRegister(); });
+        $('r-org').addEventListener('blur', () => checkField('r-org', 'orgName'));
+        $('r-name').addEventListener('blur', () => checkField('r-name', 'userName'));
+        $('r-email').addEventListener('blur', () => checkField('r-email', 'email'));
+
+        // Session check
+        try {
+            const user = JSON.parse(sessionStorage.getItem('user'));
+            if (user) showDashboard(user);
+            else showPage('landing-page');
+        } catch(e) { sessionStorage.clear(); showPage('landing-page'); }
     </script>
 </body>
 </html>
