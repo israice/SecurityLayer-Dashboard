@@ -1,0 +1,112 @@
+/* ---- Reset ---- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ---- Dashboard body ---- */
+body {
+    background-color: #1a1a2e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    color: #eee;
+    max-width: 100%;
+    width: 100%;
+    padding: 20px;
+}
+
+/* ---- Dashboard page ---- */
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #00d9ff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: normal;
+}
+.toolbar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #16213e;
+    gap: 6px;
+}
+.toolbar-spacer { flex: 1; }
+.toolbar .status {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+.status.connected { background: #0f5132; color: #75e6a0; }
+.status.disconnected { background: #842029; color: #f5c2c7; }
+.toolbar-btn {
+    background: #0f3460;
+    color: #eee;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .2s;
+}
+.toolbar-btn:hover { background: #1a4a80; }
+.settings-btn {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 6px;
+    line-height: 1;
+    transition: color .2s;
+}
+.settings-btn:hover { color: #00d9ff; }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #16213e;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    table-layout: fixed;
+}
+th {
+    background: #0f3460;
+    color: #00d9ff;
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+th:hover { background: #1a4a80; }
+td {
+    padding: 12px;
+    border-bottom: 1px solid #0f3460;
+    transition: background-color 0.3s ease;
+}
+tr:hover td { background: #1f4068; }
+tr:last-child td { border-bottom: none; }
+.version {
+    position: fixed;
+    top: 6px;
+    left: 10px;
+    font-size: 11px;
+    color: #75e6a0;
+}
+.empty-message {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+}
+.org-label {
+    color: #00d9ff;
+    font-size: 13px;
+    font-weight: 600;
+}

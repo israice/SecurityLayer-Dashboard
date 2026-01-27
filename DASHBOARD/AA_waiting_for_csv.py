@@ -46,18 +46,80 @@ sse_clients = []
 sse_lock = threading.Lock()
 file_lock = threading.Lock()
 
+
+def _add_sse_client(client_queue: queue.Queue) -> None:
+    with sse_lock:
+        sse_clients.append(client_queue)
+
+
+def _remove_sse_client(client_queue: queue.Queue) -> None:
+    with sse_lock:
+        if client_queue in sse_clients:
+            sse_clients.remove(client_queue)
+
 # ==================== Auth helpers ====================
 
 USERS_CSV = os.path.join(REPO_ROOT, 'DATA', 'users.csv')
 
-is_valid_email = lambda email: bool(re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email))
-is_valid_password = lambda password: isinstance(password, str) and len(password) >= 3
-is_valid_name = lambda name: isinstance(name, str) and len(name.strip()) >= 2
-
-generate_id = lambda prefix: f'{prefix}_{uuid.uuid4().hex[:8]}'
+def is_valid_email(email: str) -> bool:
+    return bool(re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email))
 
 
-def read_users():
+def is_valid_password(password: str) -> bool:
+    return isinstance(password, str) and len(password) >= 3
+
+
+def is_valid_name(name: str) -> bool:
+    return isinstance(name, str) and len(name.strip()) >= 2
+
+
+def generate_id(prefix: str) -> str:
+    return f'{prefix}_{uuid.uuid4().hex[:8]}'
+
+# Маппинг полей формы → колонок CSV
+_FIELD_TO_COLUMN = {
+    'email': 'USER_MAIL',
+    'orgName': 'ORG_NAME',
+    'userName': 'USER_NAME',
+}
+
+_REGISTER_VALIDATORS = [
+    ('email',    is_valid_email,    'Invalid email format'),
+    ('password', is_valid_password, 'Password must be at least 3 characters'),
+    ('orgName',  is_valid_name,     'Organization name must be at least 2 characters'),
+    ('userName', is_valid_name,     'User name must be at least 2 characters'),
+]
+
+_UNIQUENESS_RULES = [
+    ('email',    'Email is taken, try another'),
+    ('orgName',  'Organization name is taken, try another'),
+    ('userName', 'User name is taken, try another'),
+]
+
+
+def _validate_registration(data: dict) -> tuple[dict, str | None]:
+    """Валидация полей регистрации. Возвращает (fields, error_msg|None)."""
+    fields = {
+        'email':    data.get('email', '').strip(),
+        'password': data.get('password', ''),
+        'orgName':  data.get('orgName', '').strip(),
+        'userName': data.get('userName', '').strip(),
+    }
+    for field, validator, error_msg in _REGISTER_VALIDATORS:
+        if not validator(fields[field]):
+            return fields, error_msg
+    return fields, None
+
+
+def _check_field_exists(users: list[dict], field: str, value: str) -> bool:
+    """Проверяет, существует ли значение поля среди пользователей."""
+    column = _FIELD_TO_COLUMN.get(field)
+    if not column:
+        return False
+    return any(u[column].lower() == value.lower() for u in users)
+
+
+def read_users() -> list[dict]:
     """Читает пользователей из DATA/users.csv"""
     users = []
     try:
@@ -70,7 +132,7 @@ def read_users():
     return users
 
 
-def write_user(user):
+def write_user(user: dict) -> bool:
     """Добавляет нового пользователя в DATA/users.csv"""
     try:
         exists = os.path.exists(USERS_CSV)
@@ -87,7 +149,7 @@ def write_user(user):
         return False
 
 
-def read_csv_as_json():
+def read_csv_as_json() -> dict:
     """Читает CSV и возвращает данные как JSON"""
     save_path = os.path.join(script_dir, SAVE_FILE)
     if not os.path.exists(save_path):
@@ -110,7 +172,7 @@ def read_csv_as_json():
     return {'headers': headers, 'rows': data_rows}
 
 
-def notify_clients():
+def notify_clients() -> None:
     """Отправляет обновление всем SSE клиентам"""
     data = read_csv_as_json()
     message = f"data: {json.dumps(data)}\n\n"
@@ -126,7 +188,7 @@ def notify_clients():
             sse_clients.remove(client)
 
 
-def file_watcher():
+def file_watcher() -> None:
     """Polling-based file watcher"""
     save_path = os.path.join(script_dir, SAVE_FILE)
     last_mtime = 0
@@ -171,9 +233,7 @@ def update_dashboard():
 def sse():
     """SSE endpoint для получения обновлений"""
     client_queue = queue.Queue()
-
-    with sse_lock:
-        sse_clients.append(client_queue)
+    _add_sse_client(client_queue)
 
     def generate():
         # Отправляем начальные данные
@@ -189,9 +249,7 @@ def sse():
                     # Heartbeat для поддержания соединения
                     yield ": heartbeat\n\n"
         finally:
-            with sse_lock:
-                if client_queue in sse_clients:
-                    sse_clients.remove(client_queue)
+            _remove_sse_client(client_queue)
 
     return Response(
         generate(),
@@ -229,39 +287,26 @@ def api_login():
 @app.route('/api/register', methods=['POST'])
 def api_register():
     data = request.get_json()
-    email = data.get('email', '').strip()
-    password = data.get('password', '')
-    org_name = data.get('orgName', '').strip()
-    user_name = data.get('userName', '').strip()
-
-    if not is_valid_email(email):
-        return jsonify(ok=False, error='Invalid email format'), 400
-    if not is_valid_password(password):
-        return jsonify(ok=False, error='Password must be at least 3 characters'), 400
-    if not is_valid_name(org_name):
-        return jsonify(ok=False, error='Organization name must be at least 2 characters'), 400
-    if not is_valid_name(user_name):
-        return jsonify(ok=False, error='User name must be at least 2 characters'), 400
+    fields, error = _validate_registration(data)
+    if error:
+        return jsonify(ok=False, error=error), 400
 
     users = read_users()
-    if any(u['USER_MAIL'].lower() == email.lower() for u in users):
-        return jsonify(ok=False, error='Email is taken, try another'), 400
-    if any(u['ORG_NAME'].lower() == org_name.lower() for u in users):
-        return jsonify(ok=False, error='Organization name is taken, try another'), 400
-    if any(u['USER_NAME'].lower() == user_name.lower() for u in users):
-        return jsonify(ok=False, error='User name is taken, try another'), 400
+    for field, error_msg in _UNIQUENESS_RULES:
+        if _check_field_exists(users, field, fields[field]):
+            return jsonify(ok=False, error=error_msg), 400
 
     user = {
         'ORG_ID': generate_id('ORG'),
-        'ORG_NAME': org_name,
+        'ORG_NAME': fields['orgName'],
         'USER_ID': generate_id('USER'),
-        'USER_NAME': user_name,
-        'USER_MAIL': email,
-        'USER_PASSWORD': password
+        'USER_NAME': fields['userName'],
+        'USER_MAIL': fields['email'],
+        'USER_PASSWORD': fields['password']
     }
 
     if write_user(user):
-        print(f'Register success: {email}')
+        print(f'Register success: {fields["email"]}')
         return jsonify(ok=True, user=user)
     else:
         return jsonify(ok=False, error='Failed to save user'), 500
@@ -277,15 +322,7 @@ def api_check():
         return jsonify(ok=True, exists=False)
 
     users = read_users()
-    exists = False
-
-    if field == 'email':
-        exists = any(u['USER_MAIL'].lower() == value.lower() for u in users)
-    elif field == 'orgName':
-        exists = any(u['ORG_NAME'].lower() == value.lower() for u in users)
-    elif field == 'userName':
-        exists = any(u['USER_NAME'].lower() == value.lower() for u in users)
-
+    exists = _check_field_exists(users, field, value)
     return jsonify(ok=True, exists=exists)
 
 
@@ -299,7 +336,7 @@ def serve_static(subpath):
 
 @app.route('/')
 def index():
-    """Главная страница (SPA)"""
+    """Роутер — загружает страницы через loadPage() на клиенте"""
     return send_file(os.path.join(REPO_ROOT, 'DASHBOARD', 'index.html'))
 
 
@@ -325,7 +362,7 @@ def robots():
 
 # ==================== GitHub Webhook ====================
 
-def verify_github_signature(payload, signature):
+def verify_github_signature(payload: bytes, signature: str | None) -> bool:
     """Проверка HMAC-SHA256 подписи от GitHub"""
     if not signature:
         return False
@@ -335,7 +372,7 @@ def verify_github_signature(payload, signature):
     return hmac.compare_digest(expected, signature)
 
 
-def run_deploy():
+def run_deploy() -> None:
     """Выполняет деплой в фоне"""
     repo_path = config['WEBHOOK']['REPO_PATH']
     deploy_script = '/app/DASHBOARD/deploy.sh'

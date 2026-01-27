@@ -2,6 +2,10 @@
    Landing Page Styles — loaded only when #landing-page is shown
    ============================================================ */
 
+html { scroll-behavior: smooth }
+html, body { margin: 0; padding: 0 }
+body { background: #0a0a1a }
+
 /* ---- Scoping: all rules target #landing-page ---- */
 
 #landing-page {
@@ -22,9 +26,6 @@
     --card-border: rgba(255,255,255,0.08);
     --border-subtle: rgba(255,255,255,0.05);
     --primary-border: rgba(123,44,191,0.3);
-}
-
-#landing-page {
     font-family: var(--font);
     background: var(--dark);
     color: var(--text);

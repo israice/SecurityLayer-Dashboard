@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurityLayer — Dashboard</title>
+    <link rel="stylesheet" href="/static/dashboard-page/dashboard.css">
+</head>
+<body>
+    <div class="version"></div>
+    <div id="org-name" class="org-label" style="text-align:center;"></div>
+    <h1>Admin Dashboard</h1>
+    <div class="toolbar">
+        <div class="toolbar-spacer"></div>
+        <button class="settings-btn" title="Settings">&#9881;</button>
+        <button id="btn-logout" class="toolbar-btn" title="Logout">Logout</button>
+        <div id="status" class="status disconnected">Connecting...</div>
+    </div>
+    <table id="data-table">
+        <thead id="table-head"></thead>
+        <tbody id="table-body"></tbody>
+    </table>
+    <div id="empty-message" class="empty-message" style="display:none;">No data available</div>
+
+    <script src="/static/version-check.js"></script>
+    <script src="/static/dashboard-page/dashboard.js"></script>
+</body>
+</html>
