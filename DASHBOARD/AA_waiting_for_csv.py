@@ -28,6 +28,19 @@ REPO_ROOT = os.path.normpath(os.path.join(script_dir, '..'))  # корень р�
 
 app = Flask(__name__, static_folder=None)
 
+
+@app.after_request
+def add_no_cache_headers(response):
+    """Отключить кеширование для статики и HTML — после деплоя браузер получит свежие файлы"""
+    if response.content_type and ('text/html' in response.content_type
+                                   or 'text/css' in response.content_type
+                                   or 'javascript' in response.content_type):
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    return response
+
+
 # SSE клиенты
 sse_clients = []
 sse_lock = threading.Lock()
