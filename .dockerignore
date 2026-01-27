@@ -1,0 +1,8 @@
+.git
+.env
+*.pyc
+__pycache__
+text.txt
+.env_EXAMPLE
+README.md
+version.md

@@ -13,4 +13,7 @@ git fetch origin master
 echo "Resetting to origin/master..."
 git reset --hard origin/master
 
+echo "Rebuilding container..."
+docker-compose -f /repo/docker-compose.yml up -d --build
+
 echo "=== Deploy completed ==="
