@@ -12,6 +12,9 @@ Stop USB-based attacks before they start. Zero false positives. Full compliance.
 
 </div>
 
+> **Note:** This repository is **source-available** for transparency and security audits.
+> Commercial use requires a license agreement. See [LICENSE](LICENSE) for details.
+
 ---
 
 ## The Threat Is Physical
