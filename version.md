@@ -1,3 +1,49 @@
+
+---
+
+<details>
+<summary>🧑‍💻 Developer Notes</summary>
+
+```bash
+# DEV
+python DASHBOARD/AA_waiting_for_csv.py
+python AGENT/AB_sending_to_server.py
+python AGENT/AB_sending_to_server.py --local
+
+# ZIP
+python DASHBOARD\dashboard-page\download-zip\build_zip.py
+
+
+# PROD
+git pull
+docker compose up -d
+docker compose up -d --build
+docker compose up -d --build --force-recreate
+docker compose down && docker compose up -d --build
+docker logs security-layer-dashboard -f
+```
+
+
+</details>
+
+
+- fix minimizing when agent stops
+- sort csv by ORG_ID
+- free usb its red
+- in use usb is green
+- file size
+    DASHBOARD\AA_waiting_for_csv.py : 495
+    DASHBOARD\landing-page\index.html : 509
+    DASHBOARD\landing-page\landing.css : 327
+    DASHBOARD\login-page\auth.css : 379
+    DASHBOARD\dashboard-page\download-zip\build_zip.py : 318
+    DASHBOARD\dashboard-page\download-zip\SecurityLayer\usbSecurity\AA_installer.py : 382
+    DASHBOARD\dashboard-page\download-zip\SecurityLayer\usbSecurity\BA_usb_watcher.py : 254
+    DASHBOARD\dashboard-page\download-zip\SecurityLayer\usbSecurity\B_run.py : 290
+    DASHBOARD\dashboard-page\download-zip\SecurityLayer\usbSecurity\CBA_UsbTreeView.exe : 10666
+- 
+
+
 git log --oneline -n 10
 
 Copy-Item .env $env:TEMP\.env.backup
@@ -7,7 +53,7 @@ Copy-Item $env:TEMP\.env.backup .env -Force
 git push origin master --force
 
 git add .
-git commit -m "v0.0.22 - yaml removed from usbSecurity"
+git commit -m "v0.1.0 - working version PoW proof of work"
 git push
 
 v0.0.1 - dashboard SSE
@@ -32,4 +78,5 @@ v0.0.19 - fixed ui center for mobile view in landing page
 v0.0.20 - added dashboard-update-api-example
 v0.0.21 - testing update dashboard table using API
 v0.0.22 - yaml removed from usbSecurity
+v0.1.0 - working version PoW proof of work
 
