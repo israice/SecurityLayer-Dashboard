@@ -374,7 +374,8 @@ def api_build_zip():
         )
 
         if result.returncode != 0:
-            print(f'build_zip.py failed: {result.stderr}')
+            print(f'build_zip.py stdout: {result.stdout}')
+            print(f'build_zip.py stderr: {result.stderr}')
             return jsonify(ok=False, error='ZIP build failed'), 500
 
         if not os.path.exists(output_zip):
