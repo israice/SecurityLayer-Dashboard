@@ -11,6 +11,7 @@ import hashlib
 import subprocess
 import sys
 import re
+import zipfile
 import uuid
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -346,17 +347,15 @@ def api_build_zip():
 
     org_id = user['ORG_ID']
 
+    download_zip_dir = os.path.join(
+        REPO_ROOT, 'DASHBOARD', 'dashboard-page', 'download-zip'
+    )
     org_id_csv = os.path.join(
-        REPO_ROOT, 'DASHBOARD', 'dashboard-page', 'download-zip',
-        'SecurityLayer', 'usbSecurity', 'A_org_id.csv'
+        download_zip_dir, 'SecurityLayer', 'usbSecurity', 'A_org_id.csv'
     )
-    build_script = os.path.join(
-        REPO_ROOT, 'DASHBOARD', 'dashboard-page', 'download-zip', 'build_zip.py'
-    )
-    output_zip = os.path.join(
-        REPO_ROOT, 'DASHBOARD', 'dashboard-page', 'download-zip',
-        'ZIP', 'SecurityLayer_USB_Monitor.zip'
-    )
+    security_layer_dir = os.path.join(download_zip_dir, 'SecurityLayer')
+    zip_dir = os.path.join(download_zip_dir, 'ZIP')
+    output_zip = os.path.join(zip_dir, 'SecurityLayer_USB_Monitor.zip')
 
     acquired = zip_lock.acquire(timeout=5)
     if not acquired:
@@ -368,18 +367,20 @@ def api_build_zip():
             writer.writerow(['ORG_ID'])
             writer.writerow([org_id])
 
-        result = subprocess.run(
-            [sys.executable, build_script],
-            capture_output=True, text=True, timeout=300
-        )
+        os.makedirs(zip_dir, exist_ok=True)
+        exclude = {'__pycache__', '.pyc', '.build_manifest.json'}
 
-        if result.returncode != 0:
-            print(f'build_zip.py stdout: {result.stdout}')
-            print(f'build_zip.py stderr: {result.stderr}')
-            return jsonify(ok=False, error='ZIP build failed'), 500
-
-        if not os.path.exists(output_zip):
-            return jsonify(ok=False, error='ZIP file not found after build'), 500
+        with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zf:
+            for root, dirs, files in os.walk(security_layer_dir):
+                for fname in files:
+                    fpath = os.path.join(root, fname)
+                    if any(ex in fpath for ex in exclude):
+                        continue
+                    arcname = os.path.join(
+                        'SecurityLayer',
+                        os.path.relpath(fpath, security_layer_dir)
+                    )
+                    zf.write(fpath, arcname)
 
         return send_file(
             output_zip,
@@ -387,10 +388,6 @@ def api_build_zip():
             as_attachment=True,
             download_name='SecurityLayer_USB_Monitor.zip'
         )
-
-    except subprocess.TimeoutExpired:
-        print('build_zip.py timed out')
-        return jsonify(ok=False, error='Build timed out'), 504
 
     except Exception as e:
         print(f'build_zip error: {e}')

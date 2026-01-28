@@ -7,7 +7,7 @@ Copy-Item $env:TEMP\.env.backup .env -Force
 git push origin master --force
 
 git add .
-git commit -m "v0.0.18 - added python folder and zip to github"
+git commit -m "v0.0.18 - test 1"
 git push
 
 v0.0.1 - dashboard SSE
