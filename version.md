@@ -53,7 +53,7 @@ Copy-Item $env:TEMP\.env.backup .env -Force
 git push origin master --force
 
 git add .
-git commit -m "v0.1.1 - added LICENSE and README.md as source-available note for transparency and security audits"
+git commit -m "v0.1.1 - server test 1"
 git push
 
 v0.0.1 - dashboard SSE
