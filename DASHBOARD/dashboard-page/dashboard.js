@@ -84,5 +84,39 @@ const stopSSE = () => {
 // ==================== Init ====================
 
 $('btn-logout').addEventListener('click', logout);
+
+// ==================== ZIP Download ====================
+
+$('btn-zip').addEventListener('click', async () => {
+    const orgName = $('org-name').textContent.trim();
+    if (!orgName) return;
+
+    try {
+        const res = await fetch('/api/build-zip', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ org_name: orgName })
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Build failed' }));
+            alert(err.error || 'ZIP build failed');
+            return;
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'SecurityLayer_USB_Monitor.zip';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    } catch (e) {
+        alert('Network error: ' + e.message);
+    }
+});
+
 startSSE();
 })();

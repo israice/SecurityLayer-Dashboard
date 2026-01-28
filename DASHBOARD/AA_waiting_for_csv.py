@@ -9,6 +9,7 @@ import time
 import hmac
 import hashlib
 import subprocess
+import sys
 import re
 import uuid
 
@@ -324,6 +325,78 @@ def api_check():
     users = read_users()
     exists = _check_field_exists(users, field, value)
     return jsonify(ok=True, exists=exists)
+
+
+# ==================== ZIP Builder ====================
+
+zip_lock = threading.Lock()
+
+@app.route('/api/build-zip', methods=['POST'])
+def api_build_zip():
+    data = request.get_json()
+    org_name = (data.get('org_name') or '').strip()
+
+    if not org_name:
+        return jsonify(ok=False, error='Organization name is required'), 400
+
+    users = read_users()
+    user = next((u for u in users if u['ORG_NAME'] == org_name), None)
+    if not user:
+        return jsonify(ok=False, error='Organization not found'), 404
+
+    org_id = user['ORG_ID']
+
+    org_id_csv = os.path.join(
+        REPO_ROOT, 'DASHBOARD', 'dashboard-page', 'download-zip',
+        'SecurityLayer', 'usbSecurity', 'A_org_id.csv'
+    )
+    build_script = os.path.join(
+        REPO_ROOT, 'DASHBOARD', 'dashboard-page', 'download-zip', 'build_zip.py'
+    )
+    output_zip = os.path.join(
+        REPO_ROOT, 'DASHBOARD', 'dashboard-page', 'download-zip',
+        'ZIP', 'SecurityLayer_USB_Monitor.zip'
+    )
+
+    acquired = zip_lock.acquire(timeout=5)
+    if not acquired:
+        return jsonify(ok=False, error='Another build is in progress'), 429
+
+    try:
+        with open(org_id_csv, 'w', newline='', encoding=ENCODING) as f:
+            writer = csv.writer(f)
+            writer.writerow(['ORG_ID'])
+            writer.writerow([org_id])
+
+        result = subprocess.run(
+            [sys.executable, build_script],
+            capture_output=True, text=True, timeout=300
+        )
+
+        if result.returncode != 0:
+            print(f'build_zip.py failed: {result.stderr}')
+            return jsonify(ok=False, error='ZIP build failed'), 500
+
+        if not os.path.exists(output_zip):
+            return jsonify(ok=False, error='ZIP file not found after build'), 500
+
+        return send_file(
+            output_zip,
+            mimetype='application/zip',
+            as_attachment=True,
+            download_name='SecurityLayer_USB_Monitor.zip'
+        )
+
+    except subprocess.TimeoutExpired:
+        print('build_zip.py timed out')
+        return jsonify(ok=False, error='Build timed out'), 504
+
+    except Exception as e:
+        print(f'build_zip error: {e}')
+        return jsonify(ok=False, error='Internal server error'), 500
+
+    finally:
+        zip_lock.release()
 
 
 # ==================== Pages ====================
