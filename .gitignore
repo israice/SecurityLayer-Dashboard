@@ -2,3 +2,6 @@
 *.pyc
 __pycache__/
 text.txt
+*_USB_Ports_Report.txt
+**python/
+*.zip
