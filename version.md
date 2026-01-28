@@ -7,7 +7,7 @@ Copy-Item $env:TEMP\.env.backup .env -Force
 git push origin master --force
 
 git add .
-git commit -m "v0.0.21 - testing update dashboard table using API"
+git commit -m "v0.0.22 - yaml removed from usbSecurity"
 git push
 
 v0.0.1 - dashboard SSE
@@ -31,5 +31,5 @@ v0.0.18 - added python folder and zip to github
 v0.0.19 - fixed ui center for mobile view in landing page
 v0.0.20 - added dashboard-update-api-example
 v0.0.21 - testing update dashboard table using API
-
+v0.0.22 - yaml removed from usbSecurity
 
