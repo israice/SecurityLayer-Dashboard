@@ -16,11 +16,13 @@ python DASHBOARD\dashboard-page\download-zip\build_zip.py
 
 # PROD
 git pull
+docker-compose build 
 docker compose up -d
 docker compose up -d --build
 docker compose up -d --build --force-recreate
 docker compose down && docker compose up -d --build
 docker logs security-layer-dashboard -f
+
 ```
 
 
@@ -53,7 +55,7 @@ Copy-Item $env:TEMP\.env.backup .env -Force
 git push origin master --force
 
 git add .
-git commit -m "v0.1.2 - test 3"
+git commit -m "v0.1.2 - test 4"
 git push
 
 v0.0.1 - dashboard SSE

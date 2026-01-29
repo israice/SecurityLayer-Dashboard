@@ -1,10 +1,14 @@
+# Gevent monkey patching — ДОЛЖЕН быть первым!
+from gevent import monkey
+monkey.patch_all()
+
 from flask import Flask, request, Response, send_file, jsonify, send_from_directory
 import os
 import yaml
 import csv
 import json
 import threading
-import queue
+from gevent.queue import Queue, Empty, Full
 import hmac
 import hashlib
 import subprocess
@@ -49,14 +53,14 @@ sse_lock = threading.Lock()
 file_lock = threading.Lock()
 
 
-def _add_sse_client(org_id: str, client_queue: queue.Queue) -> None:
+def _add_sse_client(org_id: str, client_queue: Queue) -> None:
     with sse_lock:
         if org_id not in sse_clients_by_org:
             sse_clients_by_org[org_id] = []
         sse_clients_by_org[org_id].append(client_queue)
 
 
-def _remove_sse_client(org_id: str, client_queue: queue.Queue) -> None:
+def _remove_sse_client(org_id: str, client_queue: Queue) -> None:
     with sse_lock:
         if org_id in sse_clients_by_org:
             if client_queue in sse_clients_by_org[org_id]:
@@ -197,7 +201,7 @@ def notify_clients(changed_org_ids: set[str]) -> None:
             for client in sse_clients_by_org[org_id]:
                 try:
                     client.put_nowait(message)
-                except (queue.Full, Exception):
+                except (Full, Exception):
                     dead_clients.append(client)
 
             for client in dead_clients:
@@ -260,7 +264,7 @@ def sse():
     if not org_id:
         return 'org_id required', 400
 
-    client_queue = queue.Queue()
+    client_queue = Queue()
     _add_sse_client(org_id, client_queue)
 
     def generate():
@@ -271,9 +275,9 @@ def sse():
         try:
             while True:
                 try:
-                    message = client_queue.get(timeout=30)
+                    message = client_queue.get(timeout=5)  # 5 сек — быстрее освобождает thread при disconnect
                     yield message
-                except queue.Empty:
+                except Empty:
                     # Heartbeat для поддержания соединения
                     yield ": heartbeat\n\n"
         finally:
