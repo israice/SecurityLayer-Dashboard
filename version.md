@@ -55,7 +55,7 @@ Copy-Item $env:TEMP\.env.backup .env -Force
 git push origin master --force
 
 git add .
-git commit -m "v0.1.2 - test 5"
+git commit -m "v0.1.3 - added SSE filter ORG_ID"
 git push
 
 v0.0.1 - dashboard SSE
@@ -83,3 +83,4 @@ v0.0.22 - yaml removed from usbSecurity
 v0.1.0 - working version the proof of concept
 v0.1.1 - added LICENSE and README.md as source-available note for transparency and security audits
 v0.1.2 - added update by filter ORG_ID with PC_ID
+v0.1.3 - added SSE filter ORG_ID
