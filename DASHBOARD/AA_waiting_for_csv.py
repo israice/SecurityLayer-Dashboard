@@ -169,7 +169,7 @@ def write_user(user: dict) -> bool:
 
 def read_csv_as_json(org_id: str | None = None) -> dict:
     """Читает CSV и возвращает данные как JSON, опционально фильтруя по ORG_ID"""
-    save_path = os.path.join(script_dir, SAVE_FILE)
+    save_path = os.path.join(REPO_ROOT, 'DATA', SAVE_FILE)
     if not os.path.exists(save_path):
         return {'headers': [], 'rows': []}
 
@@ -218,7 +218,7 @@ def notify_clients(changed_org_ids: set[str]) -> None:
 @app.route(ROUTE, methods=['POST'])
 def update_dashboard():
     csv_content = request.get_data(as_text=True)
-    save_path = os.path.join(script_dir, SAVE_FILE)
+    save_path = os.path.join(REPO_ROOT, 'DATA', SAVE_FILE)
     tmp_path = save_path + '.tmp'
 
     # Парсим входящие данные

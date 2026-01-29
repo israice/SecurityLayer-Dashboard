@@ -7,7 +7,7 @@ ROUTES:
 DASHBOARD:
   HOST: 0.0.0.0
   PORT: 5000
-  SAVE_FILE: AB_saved_on_server.csv
+  SAVE_FILE: system_database.csv
 
 # Клиент (AGENT)
 AGENT:

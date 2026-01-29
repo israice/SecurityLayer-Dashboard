@@ -48,7 +48,7 @@ Copy-Item $env:TEMP\.env.backup .env -Force
 git push origin master --force
 
 git add .
-git commit -m "v0.1.4 - added red green to dashboard"
+git commit -m "v0.1.5 - system_database inside DATA folder"
 git push
 
 v0.0.1 - dashboard SSE
@@ -78,3 +78,4 @@ v0.1.1 - added LICENSE and README.md as source-available note for transparency a
 v0.1.2 - added update by filter ORG_ID with PC_ID
 v0.1.3 - added SSE filter ORG_ID
 v0.1.4 - added red green to dashboard
+v0.1.5 - system_database inside DATA folder
