@@ -8,6 +8,9 @@ EXCLUDED_DIRS = {
     "ZIP",
     "__pycache__",
     "python",
+    "AA_waiting_for_csv.py",
+    "CBA_UsbTreeView.exe",
+    "image.png",
     }
 
 for path in ROOT_DIR.rglob("*"):

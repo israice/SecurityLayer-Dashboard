@@ -27,7 +27,7 @@ const logout = () => {
 
 // ==================== Table Rendering ====================
 
-let tableData = { headers: [], rows: [] }, sortCol = 0, sortAsc = false;
+let tableData = { headers: [], rows: [] }, sortCol = 4, sortAsc = true;
 
 const render = () => {
     const rows = [...tableData.rows];
@@ -40,7 +40,14 @@ const render = () => {
         `<th onclick="window._dashSort(${i})">${esc(h)} <span style="opacity:${sortCol === i ? 1 : 0}">${sortAsc ? '▲' : '▼'}</span></th>`
     ).join('')}</tr>`;
     $('table-body').innerHTML = rows.map(r =>
-        `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`
+        `<tr>${r.map((c, i) => {
+            let cls = '';
+            if (i === 4) {
+                if (c === 'Free') cls = 'status-free';
+                else if (c === 'Secured') cls = 'status-used';
+            }
+            return `<td class="${cls}">${esc(c)}</td>`;
+        }).join('')}</tr>`
     ).join('');
 };
 

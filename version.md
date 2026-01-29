@@ -13,6 +13,8 @@ python AGENT/AB_sending_to_server.py --local
 # ZIP
 python DASHBOARD\dashboard-page\download-zip\build_zip.py
 
+# TOOLS
+python TOOLS\check_files_size.py
 
 # PROD
 git pull
@@ -34,16 +36,7 @@ docker logs security-layer-dashboard -f
 - free usb its red
 - in use usb is green
 - file size
-    DASHBOARD\AA_waiting_for_csv.py : 495
-    DASHBOARD\landing-page\index.html : 509
-    DASHBOARD\landing-page\landing.css : 327
-    DASHBOARD\login-page\auth.css : 379
-    DASHBOARD\dashboard-page\download-zip\build_zip.py : 318
-    DASHBOARD\dashboard-page\download-zip\SecurityLayer\usbSecurity\AA_installer.py : 382
-    DASHBOARD\dashboard-page\download-zip\SecurityLayer\usbSecurity\BA_usb_watcher.py : 254
-    DASHBOARD\dashboard-page\download-zip\SecurityLayer\usbSecurity\B_run.py : 290
-    DASHBOARD\dashboard-page\download-zip\SecurityLayer\usbSecurity\CBA_UsbTreeView.exe : 10666
-- 
+
 
 
 git log --oneline -n 10
@@ -55,7 +48,7 @@ Copy-Item $env:TEMP\.env.backup .env -Force
 git push origin master --force
 
 git add .
-git commit -m "v0.1.3 - added SSE filter ORG_ID"
+git commit -m "v0.1.4 - added red green to dashboard"
 git push
 
 v0.0.1 - dashboard SSE
@@ -84,3 +77,4 @@ v0.1.0 - working version the proof of concept
 v0.1.1 - added LICENSE and README.md as source-available note for transparency and security audits
 v0.1.2 - added update by filter ORG_ID with PC_ID
 v0.1.3 - added SSE filter ORG_ID
+v0.1.4 - added red green to dashboard

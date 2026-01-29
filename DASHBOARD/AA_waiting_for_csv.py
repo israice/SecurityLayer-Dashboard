@@ -1,6 +1,13 @@
-# Gevent monkey patching — ДОЛЖЕН быть первым!
-from gevent import monkey
-monkey.patch_all()
+# Gevent monkey patching — ДОЛЖЕН быть первым (только для production)
+try:
+    from gevent import monkey
+    monkey.patch_all()
+    from gevent.queue import Queue, Empty, Full
+    USE_GEVENT = True
+except ImportError:
+    from queue import Queue, Empty, Full
+    USE_GEVENT = False
+    print('⚠ gevent not found — running in dev mode (no async)')
 
 from flask import Flask, request, Response, send_file, jsonify, send_from_directory
 import os
@@ -8,11 +15,11 @@ import yaml
 import csv
 import json
 import threading
-from gevent.queue import Queue, Empty, Full
 import hmac
 import hashlib
 import subprocess
 import sys
+import signal
 import re
 import zipfile
 import uuid
@@ -53,14 +60,14 @@ sse_lock = threading.Lock()
 file_lock = threading.Lock()
 
 
-def _add_sse_client(org_id: str, client_queue: Queue) -> None:
+def _add_sse_client(org_id: str, client_queue) -> None:
     with sse_lock:
         if org_id not in sse_clients_by_org:
             sse_clients_by_org[org_id] = []
         sse_clients_by_org[org_id].append(client_queue)
 
 
-def _remove_sse_client(org_id: str, client_queue: Queue) -> None:
+def _remove_sse_client(org_id: str, client_queue) -> None:
     with sse_lock:
         if org_id in sse_clients_by_org:
             if client_queue in sse_clients_by_org[org_id]:
@@ -516,6 +523,16 @@ def github_webhook():
 
 
 if __name__ == '__main__':
+    def _shutdown():
+        print('\nServer stopped by user')
+        sys.exit(0)
+
+    if USE_GEVENT:
+        from gevent import signal_handler as gevent_signal
+        gevent_signal(signal.SIGINT, _shutdown)
+    else:
+        signal.signal(signal.SIGINT, lambda _s, _f: _shutdown())
+
     print(f'Server running on http://{HOST}:{PORT}')
     print(f'Dashboard: http://localhost:{PORT}/')
     app.run(host=HOST, port=PORT, threaded=True)

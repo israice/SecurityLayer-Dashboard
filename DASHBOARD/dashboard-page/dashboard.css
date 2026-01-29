@@ -110,3 +110,7 @@ tr:last-child td { border-bottom: none; }
     font-size: 13px;
     font-weight: 600;
 }
+
+/* Status color indicators */
+.status-free { color: #ff4757; font-weight: 600; }
+.status-used { color: #2ed573; font-weight: 600; }

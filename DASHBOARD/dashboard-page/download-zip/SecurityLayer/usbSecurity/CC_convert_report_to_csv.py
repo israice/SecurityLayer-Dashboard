@@ -137,7 +137,7 @@ def parse_usb_report():
         ports.append({
             "chain": chain,
             "device": device,
-            "status": "Used",
+            "status": "Secured",
             "name": name
         })
 
