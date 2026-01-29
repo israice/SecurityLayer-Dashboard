@@ -23,4 +23,4 @@ WORKDIR /app/DASHBOARD
 
 EXPOSE 5000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--worker-class", "gevent", "--workers", "2", "--worker-connections", "1000", "--graceful-timeout", "5", "--timeout", "600", "AA_waiting_for_csv:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--worker-class", "gevent", "--workers", "1", "--worker-connections", "1000", "--graceful-timeout", "5", "--timeout", "600", "AA_waiting_for_csv:app"]
