@@ -27,6 +27,7 @@ ENCODING = config['ENCODING']
 ROUTE = config['ROUTES']['update_dashboard']
 REPO_PATH = config['WEBHOOK']['REPO_PATH']  # "/repo" — примонтированный том (для Docker)
 REPO_ROOT = os.path.normpath(os.path.join(script_dir, '..'))  # корень репозитория (для статики)
+CSV_HEADERS = ['ORG_ID', 'PC_ID', 'PORT_ID', 'PORT_MAP', 'PORT_STATUS', 'PORT_NAME']
 
 app = Flask(__name__, static_folder=None)
 
@@ -221,12 +222,44 @@ def update_dashboard():
     save_path = os.path.join(script_dir, SAVE_FILE)
     tmp_path = save_path + '.tmp'
 
+    # Парсим входящие данные
+    lines = csv_content.strip().split('\n')
+    if not lines:
+        return 'Empty data', 400
+
+    reader = csv.DictReader(lines)
+    new_rows = list(reader)
+    if not new_rows:
+        return 'No data rows', 400
+
+    # Определяем ключи (ORG_ID, PC_ID) из новых данных
+    new_keys = set((row['ORG_ID'], row['PC_ID']) for row in new_rows)
+
     with file_lock:
-        with open(tmp_path, 'w', encoding=ENCODING) as f:
-            f.write(csv_content)
+        # Читаем существующие данные
+        existing_rows = []
+        if os.path.exists(save_path):
+            with open(save_path, 'r', encoding=ENCODING) as f:
+                existing_reader = csv.DictReader(f)
+                existing_rows = list(existing_reader)
+
+        # Оставляем только записи с другими (ORG_ID, PC_ID)
+        kept_rows = [
+            row for row in existing_rows
+            if (row['ORG_ID'], row['PC_ID']) not in new_keys
+        ]
+
+        # Объединяем: старые (других PC) + новые
+        merged_rows = kept_rows + new_rows
+
+        # Записываем результат
+        with open(tmp_path, 'w', newline='', encoding=ENCODING) as f:
+            writer = csv.DictWriter(f, fieldnames=CSV_HEADERS)
+            writer.writeheader()
+            writer.writerows(merged_rows)
         os.replace(tmp_path, save_path)
 
-    print(f'CSV saved to {save_path}')
+    print(f'CSV merged: kept {len(kept_rows)} rows, added {len(new_rows)} rows')
     notify_clients()
     return 'OK', 200
 

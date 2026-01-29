@@ -26,7 +26,7 @@ docker logs security-layer-dashboard -f
 
 </details>
 
-
+- remove other github versions nad local folders
 - fix minimizing when agent stops
 - sort csv by ORG_ID
 - free usb its red
@@ -53,7 +53,7 @@ Copy-Item $env:TEMP\.env.backup .env -Force
 git push origin master --force
 
 git add .
-git commit -m "v0.1.1 - server test 1"
+git commit -m "v0.1.2 - added update by filter ORG_ID with PC_ID"
 git push
 
 v0.0.1 - dashboard SSE
@@ -80,4 +80,4 @@ v0.0.21 - testing update dashboard table using API
 v0.0.22 - yaml removed from usbSecurity
 v0.1.0 - working version the proof of concept
 v0.1.1 - added LICENSE and README.md as source-available note for transparency and security audits
-
+v0.1.2 - added update by filter ORG_ID with PC_ID
