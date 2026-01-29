@@ -5,7 +5,6 @@ import csv
 import json
 import threading
 import queue
-import time
 import hmac
 import hashlib
 import subprocess
@@ -44,21 +43,26 @@ def add_no_cache_headers(response):
     return response
 
 
-# SSE клиенты
-sse_clients = []
+# SSE клиенты по организациям
+sse_clients_by_org = {}  # {'ORG_xxx': [queue1, queue2], ...}
 sse_lock = threading.Lock()
 file_lock = threading.Lock()
 
 
-def _add_sse_client(client_queue: queue.Queue) -> None:
+def _add_sse_client(org_id: str, client_queue: queue.Queue) -> None:
     with sse_lock:
-        sse_clients.append(client_queue)
+        if org_id not in sse_clients_by_org:
+            sse_clients_by_org[org_id] = []
+        sse_clients_by_org[org_id].append(client_queue)
 
 
-def _remove_sse_client(client_queue: queue.Queue) -> None:
+def _remove_sse_client(org_id: str, client_queue: queue.Queue) -> None:
     with sse_lock:
-        if client_queue in sse_clients:
-            sse_clients.remove(client_queue)
+        if org_id in sse_clients_by_org:
+            if client_queue in sse_clients_by_org[org_id]:
+                sse_clients_by_org[org_id].remove(client_queue)
+            if not sse_clients_by_org[org_id]:
+                del sse_clients_by_org[org_id]
 
 # ==================== Auth helpers ====================
 
@@ -152,8 +156,8 @@ def write_user(user: dict) -> bool:
         return False
 
 
-def read_csv_as_json() -> dict:
-    """Читает CSV и возвращает данные как JSON"""
+def read_csv_as_json(org_id: str | None = None) -> dict:
+    """Читает CSV и возвращает данные как JSON, опционально фильтруя по ORG_ID"""
     save_path = os.path.join(script_dir, SAVE_FILE)
     if not os.path.exists(save_path):
         return {'headers': [], 'rows': []}
@@ -172,48 +176,32 @@ def read_csv_as_json() -> dict:
     headers = rows[0]
     data_rows = rows[1:]
 
+    if org_id:
+        # ORG_ID в колонке 0
+        data_rows = [row for row in data_rows if row and row[0] == org_id]
+
     return {'headers': headers, 'rows': data_rows}
 
 
-def notify_clients() -> None:
-    """Отправляет обновление всем SSE клиентам"""
-    data = read_csv_as_json()
-    message = f"data: {json.dumps(data)}\n\n"
-
+def notify_clients(changed_org_ids: set[str]) -> None:
+    """Отправляет обновление только клиентам измененных организаций"""
     with sse_lock:
-        dead_clients = []
-        for client in sse_clients:
-            try:
-                client.put_nowait(message)
-            except (queue.Full, Exception):
-                dead_clients.append(client)
-        for client in dead_clients:
-            sse_clients.remove(client)
+        for org_id in changed_org_ids:
+            if org_id not in sse_clients_by_org:
+                continue
 
+            data = read_csv_as_json(org_id)
+            message = f"data: {json.dumps(data)}\n\n"
 
-def file_watcher() -> None:
-    """Polling-based file watcher"""
-    save_path = os.path.join(script_dir, SAVE_FILE)
-    last_mtime = 0
+            dead_clients = []
+            for client in sse_clients_by_org[org_id]:
+                try:
+                    client.put_nowait(message)
+                except (queue.Full, Exception):
+                    dead_clients.append(client)
 
-    print(f'Watching for changes: {save_path}')
-
-    while True:
-        try:
-            with file_lock:
-                if os.path.exists(save_path):
-                    mtime = os.path.getmtime(save_path)
-                else:
-                    mtime = 0
-            if mtime > last_mtime:
-                if last_mtime > 0:  # Не уведомлять при первом запуске
-                    print(f'File changed: {save_path}')
-                    notify_clients()
-                last_mtime = mtime
-        except Exception as e:
-            print(f'Watcher error: {e}')
-
-        time.sleep(0.5)  # Проверка каждые 0.5 сек
+            for client in dead_clients:
+                sse_clients_by_org[org_id].remove(client)
 
 
 @app.route(ROUTE, methods=['POST'])
@@ -260,19 +248,24 @@ def update_dashboard():
         os.replace(tmp_path, save_path)
 
     print(f'CSV merged: kept {len(kept_rows)} rows, added {len(new_rows)} rows')
-    notify_clients()
+    changed_org_ids = set(row['ORG_ID'] for row in new_rows)
+    notify_clients(changed_org_ids)
     return 'OK', 200
 
 
 @app.route('/sse')
 def sse():
-    """SSE endpoint для получения обновлений"""
+    """SSE endpoint для получения обновлений (требует org_id)"""
+    org_id = request.args.get('org_id', '').strip()
+    if not org_id:
+        return 'org_id required', 400
+
     client_queue = queue.Queue()
-    _add_sse_client(client_queue)
+    _add_sse_client(org_id, client_queue)
 
     def generate():
-        # Отправляем начальные данные
-        data = read_csv_as_json()
+        # Отправляем начальные данные — только для этой организации
+        data = read_csv_as_json(org_id)
         yield f"data: {json.dumps(data)}\n\n"
 
         try:
@@ -284,7 +277,7 @@ def sse():
                     # Heartbeat для поддержания соединения
                     yield ": heartbeat\n\n"
         finally:
-            _remove_sse_client(client_queue)
+            _remove_sse_client(org_id, client_queue)
 
     return Response(
         generate(),
@@ -517,10 +510,6 @@ def github_webhook():
     threading.Thread(target=run_deploy, daemon=True).start()
     return 'Deploy started', 200
 
-
-# Запуск file watcher в отдельном потоке (работает и с gunicorn, и напрямую)
-watcher_thread = threading.Thread(target=file_watcher, daemon=True)
-watcher_thread.start()
 
 if __name__ == '__main__':
     print(f'Server running on http://{HOST}:{PORT}')

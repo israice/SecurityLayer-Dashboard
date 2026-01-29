@@ -53,7 +53,7 @@ let sseReconnectTimer = null;
 
 const startSSE = () => {
     if (sseConnection) return;
-    const es = new EventSource('/sse');
+    const es = new EventSource(`/sse?org_id=${encodeURIComponent(currentUser.ORG_ID)}`);
     sseConnection = es;
     es.onopen = () => {
         $('status').className = 'status connected';
