@@ -53,7 +53,7 @@ Copy-Item $env:TEMP\.env.backup .env -Force
 git push origin master --force
 
 git add .
-git commit -m "v0.1.2 - added update by filter ORG_ID with PC_ID"
+git commit -m "v0.1.2 - test 1"
 git push
 
 v0.0.1 - dashboard SSE
