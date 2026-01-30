@@ -71,7 +71,7 @@ table {
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    table-layout: fixed;
+    table-layout: auto;
 }
 th {
     background: #0f3460;
