@@ -64,11 +64,8 @@ def create_port_id(device_id):
 
 
 def is_companion_port(chain):
-    try:
-        hub, port = map(int, chain.split("-"))
-        return (hub == 1 and port >= 11) or (hub >= 2 and port >= 13)
-    except:
-        return False
+    """Disabled - rely on IsUserConnectable instead."""
+    return False
 
 
 def is_user_connectable(block):
