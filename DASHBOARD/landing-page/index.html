@@ -4,506 +4,153 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Security Layer - Physical Port Security for Enterprise</title>
-    <meta name="description" content="Protect your organization from physical USB attacks, hardware keyloggers, and unauthorized device connections. The missing layer in your cybersecurity stack.">
+    <meta name="description" content="Protect your organization from physical USB attacks, hardware keyloggers, and unauthorized device connections.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/landing-page/landing.css">
 </head>
 <body>
-<div id="landing-page">
-
-<!-- SVG Sprite Definitions -->
-<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
-    <defs>
-        <linearGradient id="grad" x1="3" y1="2" x2="21" y2="23" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#00d4ff"/><stop offset="1" stop-color="#7b2cbf"/>
-        </linearGradient>
-    </defs>
-    <symbol id="shield" viewBox="0 0 24 24" fill="none" stroke="url(#grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L3 7V12C3 16.97 6.84 21.66 12 23C17.16 21.66 21 16.97 21 12V7L12 2Z"/>
-        <path d="M9 12L11 14L15 10"/>
-    </symbol>
-    <symbol id="i-usb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/>
-    </symbol>
-    <symbol id="i-keyboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M6 14h12"/>
-    </symbol>
-    <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-    </symbol>
-    <symbol id="i-shield-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/>
-    </symbol>
-    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
-    </symbol>
-    <symbol id="i-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/><path d="M9 12l2 2 4-4"/>
-    </symbol>
-    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-    </symbol>
-    <symbol id="i-fingerprint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/>
-        <path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-        <path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/>
-        <path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/>
-        <path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/>
-        <path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/>
-        <path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/>
-        <path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/>
-    </symbol>
-    <symbol id="i-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
-    </symbol>
-    <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-        <path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/>
-    </symbol>
-    <symbol id="i-finance" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><path d="M12 4v16"/>
-    </symbol>
-    <symbol id="i-health" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-    </symbol>
-    <symbol id="i-factory" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><rect x="9" y="12" width="6" height="8"/>
-    </symbol>
-    <symbol id="i-gov" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-    </symbol>
-    <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="12" y1="2" x2="12" y2="22"/>
-    </symbol>
-    <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/>
-        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-    </symbol>
-    <symbol id="i-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/>
-    </symbol>
-</svg>
-
-<!-- Navigation -->
-<nav class="navbar">
-    <div class="nav-container">
-        <div class="logo">
-            <div class="logo-icon"><svg><use href="#shield"/></svg></div>
-            <span class="logo-text">Security Layer</span>
-        </div>
-        <div class="nav-links">
-            <a href="#features">Features</a>
-            <a href="#how-it-works">How It Works</a>
-            <a href="#industries">Industries</a>
-            <a href="#pricing">Pricing</a>
-        </div>
-        <button class="lp-btn lp-btn-primary nav-cta" id="sign-in-btn">Sign In</button>
-        <button class="mobile-menu-btn" aria-label="Menu"><span></span><span></span><span></span></button>
-    </div>
-</nav>
-
-<!-- Hero Section -->
-<section class="hero">
-    <div class="container hero-content">
-        <div class="hero-badge">Physical Security Solution</div>
-        <h1>The Missing Layer in Your<br><span class="gradient-text">Cybersecurity Stack</span></h1>
-        <p class="hero-subtitle">Protect your organization from physical USB attacks, hardware keyloggers, and unauthorized device connections with real-time monitoring and automatic lockdown.</p>
-        <div class="hero-cta">
-            <a href="#contact" class="lp-btn lp-btn-primary lp-btn-lg">Request Demo &rarr;</a>
-            <a href="#how-it-works" class="lp-btn lp-btn-secondary lp-btn-lg">Learn More</a>
-        </div>
-        <div class="hero-stats">
-            <div class="stat">
-                <span class="stat-value gradient-text">80%</span>
-                <span class="stat-label">of breaches involve physical access</span>
-            </div>
-            <div class="stat">
-                <span class="stat-value gradient-text">$15.4M</span>
-                <span class="stat-label">average insider threat cost</span>
-            </div>
-            <div class="stat">
-                <span class="stat-value gradient-text">+37%</span>
-                <span class="stat-label">USB attack growth rate</span>
-            </div>
-        </div>
-        <div class="dashboard-preview">
-            <div class="preview-header">
-                <div class="preview-dots"><span></span><span></span><span></span></div>
-                <span class="preview-title">Security Layer Dashboard</span>
-            </div>
-            <div class="preview-content">
-                <div class="preview-status">
-                    <span class="status-dot"></span>
-                    <span>Real-time Monitoring Active</span>
-                </div>
-                <div class="preview-table">
-                    <div class="preview-row header"><span>Device</span><span>Port</span><span>Status</span></div>
-                    <div class="preview-row"><span>USB Keyboard</span><span>USB 3.0 #1</span><span class="badge-ok">Whitelisted</span></div>
-                    <div class="preview-row"><span>USB Mouse</span><span>USB 3.0 #2</span><span class="badge-ok">Whitelisted</span></div>
-                    <div class="preview-row alert"><span>Unknown Device</span><span>USB 2.0 #3</span><span class="badge-alert">BLOCKED</span></div>
-                    <div class="preview-row"><span>Port Blocker</span><span>USB 2.0 #4</span><span class="badge-ok">Protected</span></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Problem Section -->
-<section class="problem-section">
-    <div class="container">
-        <div class="section-header">
-            <span class="section-tag">The Problem</span>
-            <h2>Your Biggest Security Gap is <span class="gradient-text">Physical Access</span></h2>
-            <p>Traditional cybersecurity focuses on software and networks, leaving physical ports completely unprotected.</p>
-        </div>
-        <div class="threat-grid">
-            <div class="card threat-card animate">
-                <svg class="card-icon"><use href="#i-usb"/></svg>
-                <h3>USB Malware Injection</h3>
-                <p>A single malicious USB device can compromise your entire network in seconds.</p>
-            </div>
-            <div class="card threat-card animate">
-                <svg class="card-icon"><use href="#i-keyboard"/></svg>
-                <h3>Hardware Keyloggers</h3>
-                <p>Invisible devices capturing every keystroke, including passwords and sensitive data.</p>
-            </div>
-            <div class="card threat-card animate">
-                <svg class="card-icon"><use href="#i-users"/></svg>
-                <h3>Insider Threats</h3>
-                <p>Employees or contractors using external drives to steal confidential data.</p>
-            </div>
-            <div class="card threat-card animate">
-                <svg class="card-icon"><use href="#i-shield-alert"/></svg>
-                <h3>Device Tampering</h3>
-                <p>Replacing trusted peripherals with compromised devices during off-hours.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Features Section -->
-<section id="features" class="features-section">
-    <div class="container">
-        <div class="section-header">
-            <span class="section-tag">Solution</span>
-            <h2>Complete Physical Port <span class="gradient-text">Protection</span></h2>
-            <p>Security Layer provides comprehensive monitoring and control of all physical ports on your workstations.</p>
-        </div>
-        <div class="features-grid">
-            <div class="card feature-card featured animate">
-                <svg class="card-icon"><use href="#i-clock"/></svg>
-                <h3>Real-Time Monitoring</h3>
-                <p>Continuous tracking of all USB, HDMI, and DisplayPort connections with instant change detection.</p>
-                <ul class="feature-list">
-                    <li>WMI-based device monitoring</li>
-                    <li>2-second polling interval</li>
-                    <li>Instant notifications</li>
-                </ul>
-            </div>
-            <div class="card feature-card animate">
-                <svg class="card-icon"><use href="#i-shield-check"/></svg>
-                <h3>Whitelist-Based Security</h3>
-                <p>Only approved devices are allowed. Unknown devices are automatically blocked.</p>
-            </div>
-            <div class="card feature-card animate">
-                <svg class="card-icon"><use href="#i-lock"/></svg>
-                <h3>Automatic Lockdown</h3>
-                <p>Workstation locks instantly when unauthorized changes are detected.</p>
-            </div>
-            <div class="card feature-card animate">
-                <svg class="card-icon"><use href="#i-fingerprint"/></svg>
-                <h3>Device Fingerprinting</h3>
-                <p>SHA256 hashing creates unique fingerprints for each device, preventing spoofing.</p>
-            </div>
-            <div class="card feature-card animate">
-                <svg class="card-icon"><use href="#i-monitor"/></svg>
-                <h3>Admin Dashboard</h3>
-                <p>Web-based interface with real-time updates via Server-Sent Events (SSE).</p>
-            </div>
-            <div class="card feature-card animate">
-                <svg class="card-icon"><use href="#i-box"/></svg>
-                <h3>Physical Port Blockers</h3>
-                <p>Hardware blockers for unused ports with tamper detection alerts.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- How It Works Section -->
-<section id="how-it-works" class="how-section">
-    <div class="container">
-        <div class="section-header">
-            <span class="section-tag">Process</span>
-            <h2>How <span class="gradient-text">Security Layer</span> Works</h2>
-            <p>Simple deployment, immediate protection.</p>
-        </div>
-        <div class="steps-container">
-            <div class="step animate">
-                <div class="step-number">01</div>
-                <h3>Initial Scan</h3>
-                <p>Security Layer scans all ports and creates device fingerprints for your approved peripherals.</p>
-            </div>
-            <div class="step animate">
-                <div class="step-number">02</div>
-                <h3>Install Blockers</h3>
-                <p>Physical port blockers are installed in unused ports to prevent unauthorized access.</p>
-            </div>
-            <div class="step animate">
-                <div class="step-number">03</div>
-                <h3>Continuous Monitoring</h3>
-                <p>Real-time monitoring detects any changes to connected devices or port blockers.</p>
-            </div>
-            <div class="step animate">
-                <div class="step-number">04</div>
-                <h3>Automatic Response</h3>
-                <p>Unauthorized changes trigger immediate workstation lockdown and admin notification.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Zero False Positives Section -->
-<section class="zero-fp-section">
-    <div class="container">
-        <div class="zero-fp-content">
-            <div class="zero-fp-text">
-                <span class="section-tag">Reliability</span>
-                <h2>Zero <span class="gradient-text">False Positives</span></h2>
-                <p>Unlike traditional endpoint security that floods you with alerts, Security Layer only triggers when there's a real threat.</p>
-                <ul class="check-list">
-                    <li>Same device reconnection is allowed</li>
-                    <li>Fingerprint verification prevents spoofing</li>
-                    <li>No productivity impact for users</li>
-                    <li>Works completely offline</li>
-                </ul>
-            </div>
-            <div class="zero-fp-visual">
-                <div class="comparison-card old animate">
-                    <div class="comparison-header">Traditional Security</div>
-                    <div class="comparison-body">
-                        <div class="alert-item">Alert: USB device connected</div>
-                        <div class="alert-item">Alert: Device removed</div>
-                        <div class="alert-item">Alert: USB device connected</div>
-                        <div class="alert-item">Alert: Port activity detected</div>
-                        <div class="alert-item">Alert: USB device connected</div>
-                        <div class="alert-overflow">+47 more alerts today...</div>
-                    </div>
-                </div>
-                <div class="comparison-card new animate">
-                    <div class="comparison-header">Security Layer</div>
-                    <div class="comparison-body">
-                        <div class="status-ok">
-                            <svg style="width:32px;height:32px"><use href="#i-check-circle"/></svg>
-                            All ports secure
-                        </div>
-                        <div class="status-detail">Last check: 2 seconds ago</div>
-                        <div class="status-detail">Whitelisted devices: 4</div>
-                        <div class="status-detail">Protected ports: 8</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Industries Section -->
-<section id="industries" class="industries-section">
-    <div class="container">
-        <div class="section-header">
-            <span class="section-tag">Use Cases</span>
-            <h2>Built for <span class="gradient-text">Enterprise</span></h2>
-            <p>Security Layer protects organizations across all industries.</p>
-        </div>
-        <div class="industries-grid">
-            <div class="card industry-card animate">
-                <svg class="card-icon"><use href="#i-finance"/></svg>
-                <h3>Finance</h3>
-                <p>Trading floors, ATM networks, secure cash handling operations.</p>
-            </div>
-            <div class="card industry-card animate">
-                <svg class="card-icon"><use href="#i-health"/></svg>
-                <h3>Healthcare</h3>
-                <p>HIPAA compliance, patient data protection, medical devices.</p>
-            </div>
-            <div class="card industry-card animate">
-                <svg class="card-icon"><use href="#i-factory"/></svg>
-                <h3>Manufacturing</h3>
-                <p>Industrial control systems, IP protection, production lines.</p>
-            </div>
-            <div class="card industry-card animate">
-                <svg class="card-icon"><use href="#i-gov"/></svg>
-                <h3>Government</h3>
-                <p>Classified workstations, secure facilities, defense contractors.</p>
-            </div>
-            <div class="card industry-card animate">
-                <svg class="card-icon"><use href="#i-code"/></svg>
-                <h3>Technology</h3>
-                <p>R&D labs, source code protection, high-value IP assets.</p>
-            </div>
-            <div class="card industry-card animate">
-                <svg class="card-icon"><use href="#i-globe"/></svg>
-                <h3>Enterprise</h3>
-                <p>Corporate offices, remote workstations, multi-site deployments.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Pricing Section -->
-<section id="pricing" class="pricing-section">
-    <div class="container">
-        <div class="section-header">
-            <span class="section-tag">Pricing</span>
-            <h2>Enterprise <span class="gradient-text">Solutions</span></h2>
-            <p>Complete physical security package for your organization.</p>
-        </div>
-        <div class="pricing-grid">
-            <div class="card pricing-card animate">
-                <div class="pricing-header">
-                    <h3>Starter</h3>
-                    <p>For small teams</p>
-                </div>
-                <div class="pricing-body">
-                    <div class="price">
-                        <span class="currency">$</span><span class="amount gradient-text">29</span>
-                        <span class="period">/workstation/month</span>
-                    </div>
-                    <ul class="pricing-features">
-                        <li>Up to 25 workstations</li>
-                        <li>Real-time monitoring</li>
-                        <li>Admin dashboard</li>
-                        <li>Email alerts</li>
-                        <li>Standard support</li>
-                    </ul>
-                    <a href="#contact" class="lp-btn lp-btn-secondary lp-btn-block">Contact Sales</a>
-                </div>
-            </div>
-            <div class="card pricing-card featured animate">
-                <div class="pricing-badge">Most Popular</div>
-                <div class="pricing-header">
-                    <h3>Business</h3>
-                    <p>For growing organizations</p>
-                </div>
-                <div class="pricing-body">
-                    <div class="price">
-                        <span class="currency">$</span><span class="amount gradient-text">49</span>
-                        <span class="period">/workstation/month</span>
-                    </div>
-                    <ul class="pricing-features">
-                        <li>Up to 250 workstations</li>
-                        <li>Everything in Starter</li>
-                        <li>Port blocker kit included</li>
-                        <li>Automatic lockdown</li>
-                        <li>Priority support</li>
-                        <li>API access</li>
-                    </ul>
-                    <a href="#contact" class="lp-btn lp-btn-primary lp-btn-block">Contact Sales</a>
-                </div>
-            </div>
-            <div class="card pricing-card animate">
-                <div class="pricing-header">
-                    <h3>Enterprise</h3>
-                    <p>For large organizations</p>
-                </div>
-                <div class="pricing-body">
-                    <div class="price">
-                        <span class="amount gradient-text">Custom</span>
-                        <span class="period"></span>
-                    </div>
-                    <ul class="pricing-features">
-                        <li>Unlimited workstations</li>
-                        <li>Everything in Business</li>
-                        <li>Central management server</li>
-                        <li>Custom integrations</li>
-                        <li>On-site deployment</li>
-                        <li>Dedicated support</li>
-                        <li>SLA guarantee</li>
-                    </ul>
-                    <a href="#contact" class="lp-btn lp-btn-secondary lp-btn-block">Contact Sales</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section id="contact" class="cta-section">
-    <div class="container">
-        <div class="cta-content">
-            <h2>Ready to Secure Your <span class="gradient-text">Physical Ports?</span></h2>
-            <p>Join organizations that trust Security Layer to protect their workstations from physical threats.</p>
-            <div class="cta-buttons">
-                <a href="mailto:contact@securitylayer.io" class="lp-btn lp-btn-primary lp-btn-lg">Request Demo</a>
-                <button class="lp-btn lp-btn-secondary lp-btn-lg" id="sign-in-btn-footer">Sign In to Dashboard</button>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Footer -->
-<footer class="lp-footer">
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-brand">
-                <div class="logo">
-                    <div class="logo-icon"><svg><use href="#shield"/></svg></div>
-                    <span class="logo-text">Security Layer</span>
-                </div>
-                <p>The missing layer in your cybersecurity stack.</p>
-            </div>
-            <div class="footer-links">
-                <div class="footer-column">
-                    <h4>Product</h4>
-                    <a href="#features">Features</a>
-                    <a href="#pricing">Pricing</a>
-                    <a href="#how-it-works">How It Works</a>
-                </div>
-                <div class="footer-column">
-                    <h4>Industries</h4>
-                    <a href="#industries">Finance</a>
-                    <a href="#industries">Healthcare</a>
-                    <a href="#industries">Government</a>
-                </div>
-                <div class="footer-column">
-                    <h4>Company</h4>
-                    <a href="#contact">Contact</a>
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Security Layer. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
-
-</div><!-- /landing-page -->
-
+<div id="landing-page"></div>
 <script>
-    // Sign In buttons -> go to login page
-    const goLogin = () => { window.loadPage('login-page'); };
-    document.getElementById('sign-in-btn').addEventListener('click', goLogin);
-    document.getElementById('sign-in-btn-footer').addEventListener('click', goLogin);
+const D = document, $ = s => D.getElementById(s), C = (t, c = '', h = '') => `<div class="${c}">${h || ''}${t}</div>`;
+const icon = id => `<svg class="card-icon"><use href="/static/landing-page/icons.svg#${id}"/></svg>`;
+const card = (i, t, p, cls = '', extra = '') => `<div class="card ${cls} animate">${icon(i)}<h3>${t}</h3><p>${p}</p>${extra}</div>`;
+const section = (id, tag, title, sub, content) => `<section id="${id}" class="${id}-section"><div class="container">
+<div class="section-header"><span class="section-tag">${tag}</span><h2>${title}</h2><p>${sub}</p></div>${content}</div></section>`;
 
-    // Mobile menu
-    const menuBtn = document.querySelector('.mobile-menu-btn');
-    const navLinks = document.querySelector('.nav-links');
-    menuBtn.addEventListener('click', () => { navLinks.classList.toggle('active'); menuBtn.classList.toggle('active') });
+const data = {
+  threats: [
+    ['i-usb', 'USB Malware Injection', 'A single malicious USB device can compromise your entire network in seconds.'],
+    ['i-keyboard', 'Hardware Keyloggers', 'Invisible devices capturing every keystroke, including passwords and sensitive data.'],
+    ['i-users', 'Insider Threats', 'Employees or contractors using external drives to steal confidential data.'],
+    ['i-shield-alert', 'Device Tampering', 'Replacing trusted peripherals with compromised devices during off-hours.']
+  ],
+  features: [
+    ['i-clock', 'Real-Time Monitoring', 'Continuous tracking of all USB, HDMI, and DisplayPort connections with instant change detection.', true, '<ul class="feature-list"><li>WMI-based device monitoring</li><li>2-second polling interval</li><li>Instant notifications</li></ul>'],
+    ['i-shield-check', 'Whitelist-Based Security', 'Only approved devices are allowed. Unknown devices are automatically blocked.'],
+    ['i-lock', 'Automatic Lockdown', 'Workstation locks instantly when unauthorized changes are detected.'],
+    ['i-fingerprint', 'Device Fingerprinting', 'SHA256 hashing creates unique fingerprints for each device, preventing spoofing.'],
+    ['i-monitor', 'Admin Dashboard', 'Web-based interface with real-time updates via Server-Sent Events (SSE).'],
+    ['i-box', 'Physical Port Blockers', 'Hardware blockers for unused ports with tamper detection alerts.']
+  ],
+  steps: [
+    ['01', 'Initial Scan', 'Security Layer scans all ports and creates device fingerprints for your approved peripherals.'],
+    ['02', 'Install Blockers', 'Physical port blockers are installed in unused ports to prevent unauthorized access.'],
+    ['03', 'Continuous Monitoring', 'Real-time monitoring detects any changes to connected devices or port blockers.'],
+    ['04', 'Automatic Response', 'Unauthorized changes trigger immediate workstation lockdown and admin notification.']
+  ],
+  industries: [
+    ['i-finance', 'Finance', 'Trading floors, ATM networks, secure cash handling operations.'],
+    ['i-health', 'Healthcare', 'HIPAA compliance, patient data protection, medical devices.'],
+    ['i-factory', 'Manufacturing', 'Industrial control systems, IP protection, production lines.'],
+    ['i-gov', 'Government', 'Classified workstations, secure facilities, defense contractors.'],
+    ['i-code', 'Technology', 'R&D labs, source code protection, high-value IP assets.'],
+    ['i-globe', 'Enterprise', 'Corporate offices, remote workstations, multi-site deployments.']
+  ],
+  pricing: [
+    ['Starter', 'For small teams', '29', ['Up to 25 workstations', 'Real-time monitoring', 'Admin dashboard', 'Email alerts', 'Standard support']],
+    ['Business', 'For growing organizations', '49', ['Up to 250 workstations', 'Everything in Starter', 'Port blocker kit included', 'Automatic lockdown', 'Priority support', 'API access'], true],
+    ['Enterprise', 'For large organizations', 'Custom', ['Unlimited workstations', 'Everything in Business', 'Central management server', 'Custom integrations', 'On-site deployment', 'Dedicated support', 'SLA guarantee']]
+  ]
+};
 
-    // Close mobile menu on nav click
-    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-        navLinks.classList.remove('active'); menuBtn.classList.remove('active');
-    }));
+const html = `
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none"><defs><linearGradient id="grad" x1="3" y1="2" x2="21" y2="23" gradientUnits="userSpaceOnUse"><stop stop-color="#00d4ff"/><stop offset="1" stop-color="#7b2cbf"/></linearGradient></defs>
+<symbol id="shield" viewBox="0 0 24 24" fill="none" stroke="url(#grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7V12C3 16.97 6.84 21.66 12 23C17.16 21.66 21 16.97 21 12V7L12 2Z"/><path d="M9 12L11 14L15 10"/></symbol></svg>
 
-    // Intersection Observer for scroll animations
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target) } });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.animate').forEach(el => observer.observe(el));
+<nav class="navbar"><div class="nav-container">
+<div class="logo"><div class="logo-icon"><svg><use href="#shield"/></svg></div><span class="logo-text">Security Layer</span></div>
+<div class="nav-links"><a href="#features">Features</a><a href="#how-it-works">How It Works</a><a href="#industries">Industries</a><a href="#pricing">Pricing</a></div>
+<button class="lp-btn lp-btn-primary nav-cta" id="sign-in-btn">Sign In</button>
+<button class="mobile-menu-btn" aria-label="Menu"><span></span><span></span><span></span></button>
+</div></nav>
+
+<section class="hero"><div class="container hero-content">
+<div class="hero-badge">Physical Security Solution</div>
+<h1>The Missing Layer in Your<br><span class="gradient-text">Cybersecurity Stack</span></h1>
+<p class="hero-subtitle">Protect your organization from physical USB attacks, hardware keyloggers, and unauthorized device connections with real-time monitoring and automatic lockdown.</p>
+<div class="hero-cta"><a href="#contact" class="lp-btn lp-btn-primary lp-btn-lg">Request Demo &rarr;</a><a href="#how-it-works" class="lp-btn lp-btn-secondary lp-btn-lg">Learn More</a></div>
+<div class="hero-stats">
+${[['80%', 'of breaches involve physical access'], ['$15.4M', 'average insider threat cost'], ['+37%', 'USB attack growth rate']].map(s => `<div class="stat"><span class="stat-value gradient-text">${s[0]}</span><span class="stat-label">${s[1]}</span></div>`).join('')}
+</div>
+<div class="dashboard-preview"><div class="preview-header"><div class="preview-dots"><span></span><span></span><span></span></div><span class="preview-title">Security Layer Dashboard</span></div>
+<div class="preview-content"><div class="preview-status"><span class="status-dot"></span><span>Real-time Monitoring Active</span></div>
+<div class="preview-table">
+<div class="preview-row header"><span>Device</span><span>Port</span><span>Status</span></div>
+${[['USB Keyboard', 'USB 3.0 #1', 'Whitelisted', 'ok'], ['USB Mouse', 'USB 3.0 #2', 'Whitelisted', 'ok'], ['Unknown Device', 'USB 2.0 #3', 'BLOCKED', 'alert'], ['Port Blocker', 'USB 2.0 #4', 'Protected', 'ok']].map(r => `<div class="preview-row${r[3]==='alert'?' alert':''}"><span>${r[0]}</span><span>${r[1]}</span><span class="badge-${r[3]}">${r[2]}</span></div>`).join('')}
+</div></div></div>
+</div></section>
+
+<section class="problem-section"><div class="container">
+<div class="section-header"><span class="section-tag">The Problem</span><h2>Your Biggest Security Gap is <span class="gradient-text">Physical Access</span></h2><p>Traditional cybersecurity focuses on software and networks, leaving physical ports completely unprotected.</p></div>
+<div class="threat-grid">${data.threats.map(t => card(t[0], t[1], t[2], 'threat-card')).join('')}</div>
+</div></section>
+
+${section('features', 'Solution', 'Complete Physical Port <span class="gradient-text">Protection</span>', 'Security Layer provides comprehensive monitoring and control of all physical ports on your workstations.',
+  `<div class="features-grid">${data.features.map(f => card(f[0], f[1], f[2], 'feature-card' + (f[3] ? ' featured' : ''), f[4] || '')).join('')}</div>`)}
+
+<section id="how-it-works" class="how-section"><div class="container">
+<div class="section-header"><span class="section-tag">Process</span><h2>How <span class="gradient-text">Security Layer</span> Works</h2><p>Simple deployment, immediate protection.</p></div>
+<div class="steps-container">${data.steps.map(s => `<div class="step animate"><div class="step-number">${s[0]}</div><h3>${s[1]}</h3><p>${s[2]}</p></div>`).join('')}</div>
+</div></section>
+
+<section class="zero-fp-section"><div class="container"><div class="zero-fp-content">
+<div class="zero-fp-text"><span class="section-tag">Reliability</span><h2>Zero <span class="gradient-text">False Positives</span></h2>
+<p>Unlike traditional endpoint security that floods you with alerts, Security Layer only triggers when there's a real threat.</p>
+<ul class="check-list"><li>Same device reconnection is allowed</li><li>Fingerprint verification prevents spoofing</li><li>No productivity impact for users</li><li>Works completely offline</li></ul></div>
+<div class="zero-fp-visual">
+<div class="comparison-card old animate"><div class="comparison-header">Traditional Security</div><div class="comparison-body">
+${['Alert: USB device connected', 'Alert: Device removed', 'Alert: USB device connected', 'Alert: Port activity detected', 'Alert: USB device connected'].map(a => `<div class="alert-item">${a}</div>`).join('')}
+<div class="alert-overflow">+47 more alerts today...</div></div></div>
+<div class="comparison-card new animate"><div class="comparison-header">Security Layer</div><div class="comparison-body">
+<div class="status-ok"><svg style="width:32px;height:32px"><use href="/static/landing-page/icons.svg#i-check-circle"/></svg>All ports secure</div>
+<div class="status-detail">Last check: 2 seconds ago</div><div class="status-detail">Whitelisted devices: 4</div><div class="status-detail">Protected ports: 8</div>
+</div></div></div>
+</div></div></section>
+
+${section('industries', 'Use Cases', 'Built for <span class="gradient-text">Enterprise</span>', 'Security Layer protects organizations across all industries.',
+  `<div class="industries-grid">${data.industries.map(i => card(i[0], i[1], i[2], 'industry-card')).join('')}</div>`)}
+
+<section id="pricing" class="pricing-section"><div class="container">
+<div class="section-header"><span class="section-tag">Pricing</span><h2>Enterprise <span class="gradient-text">Solutions</span></h2><p>Complete physical security package for your organization.</p></div>
+<div class="pricing-grid">${data.pricing.map(p => `<div class="card pricing-card${p[4] ? ' featured' : ''} animate">
+${p[4] ? '<div class="pricing-badge">Most Popular</div>' : ''}<div class="pricing-header"><h3>${p[0]}</h3><p>${p[1]}</p></div>
+<div class="pricing-body"><div class="price">${p[2] !== 'Custom' ? `<span class="currency">$</span><span class="amount gradient-text">${p[2]}</span><span class="period">/workstation/month</span>` : `<span class="amount gradient-text">Custom</span>`}</div>
+<ul class="pricing-features">${p[3].map(f => `<li>${f}</li>`).join('')}</ul>
+<a href="#contact" class="lp-btn lp-btn-${p[4] ? 'primary' : 'secondary'} lp-btn-block">Contact Sales</a></div></div>`).join('')}</div>
+</div></section>
+
+<section id="contact" class="cta-section"><div class="container"><div class="cta-content">
+<h2>Ready to Secure Your <span class="gradient-text">Physical Ports?</span></h2>
+<p>Join organizations that trust Security Layer to protect their workstations from physical threats.</p>
+<div class="cta-buttons"><a href="mailto:contact@securitylayer.io" class="lp-btn lp-btn-primary lp-btn-lg">Request Demo</a>
+<button class="lp-btn lp-btn-secondary lp-btn-lg" id="sign-in-btn-footer">Sign In to Dashboard</button></div>
+</div></div></section>
+
+<footer class="lp-footer"><div class="container">
+<div class="footer-content"><div class="footer-brand"><div class="logo"><div class="logo-icon"><svg><use href="#shield"/></svg></div><span class="logo-text">Security Layer</span></div><p>The missing layer in your cybersecurity stack.</p></div>
+<div class="footer-links">
+<div class="footer-column"><h4>Product</h4><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#how-it-works">How It Works</a></div>
+<div class="footer-column"><h4>Industries</h4><a href="#industries">Finance</a><a href="#industries">Healthcare</a><a href="#industries">Government</a></div>
+<div class="footer-column"><h4>Company</h4><a href="#contact">Contact</a><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div>
+</div></div>
+<div class="footer-bottom"><p>&copy; 2025 Security Layer. All rights reserved.</p></div>
+</div></footer>`;
+
+$('landing-page').innerHTML = html;
+
+// Event handlers
+const goLogin = () => window.loadPage('login-page');
+$('sign-in-btn').onclick = $('sign-in-btn-footer').onclick = goLogin;
+
+const menuBtn = D.querySelector('.mobile-menu-btn'), navLinks = D.querySelector('.nav-links');
+menuBtn.onclick = () => { navLinks.classList.toggle('active'); menuBtn.classList.toggle('active'); };
+navLinks.querySelectorAll('a').forEach(a => a.onclick = () => { navLinks.classList.remove('active'); menuBtn.classList.remove('active'); });
+
+new IntersectionObserver((entries, obs) => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }}), { threshold: 0.1 })
+  .observe(D.querySelectorAll('.animate').forEach(el => el) || D.body);
+D.querySelectorAll('.animate').forEach(el => new IntersectionObserver((entries, obs) => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }}), { threshold: 0.1 }).observe(el));
 </script>
 </body>
 </html>

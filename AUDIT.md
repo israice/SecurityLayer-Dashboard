@@ -180,7 +180,7 @@ SecurityLayer/
 
 #### 1. Plaintext Password Storage
 ```
-Location: DATA/users.csv
+Location: DATA/admins.csv
 Impact: Complete account compromise if database accessed
 Current: Passwords stored as plaintext in CSV
 ```
@@ -301,7 +301,7 @@ Impact: Webhook can be forged by attackers
 
 ## Database Schema
 
-### Users Database (`DATA/users.csv`)
+### Users Database (`DATA/admins.csv`)
 
 | Field | Type | Constraints |
 |-------|------|-------------|

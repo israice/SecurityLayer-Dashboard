@@ -45,7 +45,7 @@ git push origin master --force
 
 
 git add .
-git commit -m "v0.1.7 - added AUDIT.md"
+git commit -m "v0.1.8 - large files refactoring"
 git push
 
 
@@ -56,3 +56,4 @@ v0.1.3 - added SSE filter ORG_ID
 v0.1.4 - added red green to dashboard
 v0.1.6 - removed other github versions and local folders
 v0.1.7 - added AUDIT.md
+v0.1.8 - large files refactoring
