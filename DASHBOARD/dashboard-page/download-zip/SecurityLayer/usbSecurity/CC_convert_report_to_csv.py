@@ -59,8 +59,9 @@ def read_pc_id():
     return None
 
 
-def create_port_id(device_id):
-    return "PORT_" + hashlib.md5(device_id.encode()).hexdigest()[:HASH_LEN]
+def create_port_id(pc_id, chain):
+    combined = f"{pc_id}_{chain}"
+    return "PORT_" + hashlib.md5(combined.encode()).hexdigest()[:HASH_LEN]
 
 
 def is_companion_port(chain):
@@ -150,7 +151,7 @@ def write_ports_csv(ports, org_id, pc_id):
             w.writerow([
                 org_id,
                 pc_id,
-                create_port_id(p["device"]),
+                create_port_id(pc_id, p["chain"]),
                 p["chain"],
                 p["status"],
                 p["name"]

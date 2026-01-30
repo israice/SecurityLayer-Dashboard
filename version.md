@@ -23,6 +23,12 @@ docker compose up -d --build --force-recreate
 docker compose down && docker compose up -d --build
 docker logs security-layer-dashboard -f
 
+docker compose down -v --rmi all
+docker compose build --no-cache
+docker compose up -d
+
+
+
 ```
 </details>
 
@@ -39,7 +45,7 @@ git push origin master --force
 
 
 git add .
-git commit -m "v0.1.9 - test 10"
+git commit -m "v0.1.9 - test 11"
 git push
 
 
