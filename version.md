@@ -39,7 +39,7 @@ git push origin master --force
 
 
 git add .
-git commit -m "v0.1.9 - test 6"
+git commit -m "v0.1.9 - test 7"
 git push
 
 
