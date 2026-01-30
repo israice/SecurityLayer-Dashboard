@@ -45,7 +45,7 @@ git push origin master --force
 
 
 git add .
-git commit -m "v0.1.9 - test 14"
+git commit -m "v0.1.10 - removed UsbTreeView logic"
 git push
 
 
@@ -58,3 +58,4 @@ v0.1.6 - removed other github versions and local folders
 v0.1.7 - added AUDIT.md
 v0.1.8 - large files refactoring
 v0.1.9 - convert_report_to_csv upgrade
+v0.1.10 - removed UsbTreeView logic 

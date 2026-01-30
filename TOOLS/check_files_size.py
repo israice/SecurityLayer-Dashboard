@@ -8,7 +8,6 @@ EXCLUDED_DIRS = {
     "ZIP",
     "__pycache__",
     "python",
-    "CBA_UsbTreeView.exe",
     "image.png",
     "AUDIT.md",
     }

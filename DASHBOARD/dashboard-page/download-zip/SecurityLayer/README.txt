@@ -20,7 +20,7 @@ Security Layer - USB Monitoring System v0.0.1
 
 IMPORTANT
 ---------
-This software uses WMI, System Hooks, and a third-party tool (UsbTreeView) to monitor USB activity.
+This software uses WMI and System Hooks to monitor USB activity.
 These behaviors may trigger ANTIVIRUS ALERTS (False Positives).
 
 Please configure EXCLUSIONS before installation to ensure stable operation.
@@ -45,7 +45,6 @@ The following paths SHOULD be excluded from Antivirus scanning.
 2. Specific Processes (If folder exclusion is insufficient):
    - C:\SecurityLayer\usbSecurity\python\python.exe
    - C:\SecurityLayer\usbSecurity\python\pythonw.exe
-   - C:\SecurityLayer\usbSecurity\CBA_UsbTreeView.exe
    - C:\SecurityLayer\usbSecurity\BA_usb_watcher.py
 
 CONFIGURATION EXAMPLES

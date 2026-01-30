@@ -14,8 +14,6 @@ SCRIPT_DIR = Path(__file__).parent
 
 # Scripts (just filenames - all in same folder as this script)
 SCRIPTS = [
-    "CA_get_pc_id.py",
-    "CB_create_usb_report.py",
     "CC_convert_report_to_csv.py",
     "CD_send_final_csv_to_server.py",
 ]

@@ -7,9 +7,7 @@ from pathlib import Path
 PYTHON_VERSION = "3.11.9"
 PYTHON_URL = f"https://www.python.org/ftp/python/{PYTHON_VERSION}/python-{PYTHON_VERSION}-embed-amd64.zip"
 GET_PIP_URL = "https://bootstrap.pypa.io/get-pip.py"
-USBTREEVIEW_URL = "https://www.uwe-sieber.de/files/UsbTreeView_x64.zip"
 DEPENDENCIES = ["PyMI>=1.0.8", "psutil>=5.9.0", "requests>=2.31.0"]
-USBTREEVIEW_EXE = "CBA_UsbTreeView.exe"
 
 # Paths
 PROJECT_ROOT = Path(__file__).parent.absolute()
@@ -131,28 +129,6 @@ def ensure_python_ready(manifest):
         return True, manifest
 
 
-def ensure_usbtreeview_ready():
-    usbtreeview_path = USB_SECURITY_DIR / USBTREEVIEW_EXE
-    if usbtreeview_path.exists():
-        print("  UsbTreeView: OK")
-        return True
-
-    print("  Downloading UsbTreeView...")
-    with tempfile.TemporaryDirectory() as temp_dir:
-        temp = Path(temp_dir)
-        if not download_and_extract(USBTREEVIEW_URL, temp, "UsbTreeView"):
-            return False
-
-        exe = next(temp.rglob("UsbTreeView.exe"), None)
-        if not exe:
-            print("  ERROR: UsbTreeView.exe not found")
-            return False
-
-        shutil.copy2(exe, usbtreeview_path)
-        print("  UsbTreeView ready!")
-        return True
-
-
 def create_zip(manifest):
     if is_valid("project", manifest):
         print(f"  ZIP up to date: {OUTPUT_ZIP.name}")
@@ -186,9 +162,8 @@ def main():
         manifest = load_manifest()
 
         steps = [
-            ("[1/3] Checking Python environment", lambda m: ensure_python_ready(m)),
-            ("[2/3] Checking UsbTreeView", lambda m: (ensure_usbtreeview_ready(), m)),
-            ("[3/3] Checking distribution package", lambda m: create_zip(m)),
+            ("[1/2] Checking Python environment", lambda m: ensure_python_ready(m)),
+            ("[2/2] Checking distribution package", lambda m: create_zip(m)),
         ]
 
         for name, func in steps:

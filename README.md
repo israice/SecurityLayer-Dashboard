@@ -127,7 +127,6 @@ Questions? Contact us: [israice@gmail.com](mailto:israice@gmail.com)
 | PyMI | 1.0.8+ | WMI wrapper |
 | psutil | 5.9.0+ | Process management |
 | requests | 2.31.0+ | HTTP client |
-| UsbTreeView.exe | External | USB enumeration |
 
 ### Infrastructure
 
