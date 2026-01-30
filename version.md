@@ -27,12 +27,6 @@ docker logs security-layer-dashboard -f
 </details>
 
 
-- fix minimizing when agent stops
-- file size
-
-
-
-
 git log --oneline -n 10
 
 Copy-Item .env $env:TEMP\.env.backup
@@ -45,7 +39,7 @@ git push origin master --force
 
 
 git add .
-git commit -m "v0.1.8 - large files refactoring"
+git commit -m "v0.1.9 - convert_report_to_csv upgrade"
 git push
 
 
@@ -57,3 +51,4 @@ v0.1.4 - added red green to dashboard
 v0.1.6 - removed other github versions and local folders
 v0.1.7 - added AUDIT.md
 v0.1.8 - large files refactoring
+v0.1.9 - convert_report_to_csv upgrade

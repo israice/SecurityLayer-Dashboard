@@ -30,7 +30,7 @@ SAVE_FILE = config['DASHBOARD']['SAVE_FILE']
 ENCODING = config['ENCODING']
 ROUTE = config['ROUTES']['update_dashboard']
 REPO_ROOT = os.path.normpath(os.path.join(script_dir, '..'))
-CSV_HEADERS = ['ORG_ID', 'PC_ID', 'PORT_ID', 'PORT_MAP', 'PORT_STATUS', 'PORT_NAME']
+CSV_HEADERS = ['ORG_ID', 'PC_ID', 'PORT_ID', 'PORT_MAP', 'PORT_STATUS', 'PORT_NAME', 'MANUFACTURER']
 
 app = Flask(__name__, static_folder=None)
 
