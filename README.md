@@ -95,3 +95,45 @@ Questions? Contact us: [israice@gmail.com](mailto:israice@gmail.com)
 **Security Layer** — Cybersecurity doesn't end at your firewall.
 
 </div>
+
+
+## Technology Stack
+
+### Backend (Server)
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Python | 3.11+ | Runtime |
+| Flask | Latest | Web framework |
+| Gunicorn | Latest | WSGI server |
+| Gevent | Latest | Async I/O |
+| PyYAML | Latest | Configuration |
+| Watchdog | Latest | File monitoring |
+
+### Frontend
+
+| Technology | Purpose |
+|------------|---------|
+| HTML5/CSS3 | Structure & styling |
+| Vanilla JS (ES6+) | Logic |
+| Server-Sent Events | Real-time sync |
+| Google Fonts | Typography |
+
+### Agent (Windows)
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Python Embedded | 3.11.9 | Runtime |
+| PyMI | 1.0.8+ | WMI wrapper |
+| psutil | 5.9.0+ | Process management |
+| requests | 2.31.0+ | HTTP client |
+| UsbTreeView.exe | External | USB enumeration |
+
+### Infrastructure
+
+| Technology | Purpose |
+|------------|---------|
+| Docker | Containerization |
+| Docker Compose | Orchestration |
+| Git Webhooks | Auto-deployment |
+| HMAC-SHA256 | Webhook security |
