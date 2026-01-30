@@ -29,10 +29,27 @@ GENERIC_MANUFACTURERS = [
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Encodings to try (in order of priority)
+ENCODINGS = ["utf-16-le", "utf-16-be", "utf-8-sig", "utf-8", "cp1251", "latin-1"]
+
 
 # =========================
 # FUNCTIONS
 # =========================
+def read_file_with_encoding(path):
+    """Try multiple encodings to read the file."""
+    for encoding in ENCODINGS:
+        try:
+            with open(path, "r", encoding=encoding) as f:
+                content = f.read()
+                # Verify content looks valid (contains expected markers)
+                if "USB" in content and "Port" in content:
+                    return content
+        except (UnicodeDecodeError, UnicodeError):
+            continue
+    raise ValueError(f"Could not read file {path} with any known encoding")
+
+
 def read_org_id():
     """Read ORG_ID from A_org_id.csv"""
     path = os.path.join(SCRIPT_DIR, ORG_ID_FILE)
@@ -64,25 +81,70 @@ def create_port_id(pc_id, chain):
     return "PORT_" + hashlib.md5(combined.encode()).hexdigest()[:HASH_LEN]
 
 
-def is_companion_port(chain):
-    """Disabled - rely on IsUserConnectable instead."""
-    return False
-
-
 def is_user_connectable(block):
     """Check if port is physically accessible (not virtual/internal)"""
     match = re.search(r'IsUserConnectable\s*:\s*(\w+)', block)
     if match:
         return match.group(1).strip().lower() == "yes"
-    return True  # Default to True if property not found
+    return True
+
+
+def parse_physical_controllers(content):
+    """Parse USB Host Controllers and return set of physical controller indices.
+
+    Physical controllers have Enumerator: PCI
+    Virtual controllers have Enumerator: ROOT (e.g., Parsec, VirtualBox)
+    """
+    physical_controllers = set()
+
+    # Split content by controller sections
+    controller_pattern = re.compile(
+        r'={20,}\s*USB\s+Host\s+Controller\s*={20,}',
+        re.DOTALL
+    )
+
+    # Find all controller section start positions
+    controller_starts = [m.start() for m in controller_pattern.finditer(content)]
+
+    for idx, start in enumerate(controller_starts):
+        controller_idx = idx + 1
+
+        # Get text until next controller or end of file
+        if idx + 1 < len(controller_starts):
+            end = controller_starts[idx + 1]
+        else:
+            end = len(content)
+
+        block = content[start:end]
+
+        # Check Enumerator type
+        enumerator_match = re.search(r'Enumerator\s*:\s*(\w+)', block)
+        if enumerator_match:
+            enumerator = enumerator_match.group(1).strip().upper()
+            if enumerator == "PCI":
+                physical_controllers.add(controller_idx)
+
+    return physical_controllers
+
+
+def get_controller_index_from_chain(chain):
+    """Extract controller index from port chain (first number)."""
+    parts = chain.split('-')
+    if parts:
+        try:
+            return int(parts[0])
+        except ValueError:
+            pass
+    return 0
 
 
 def parse_usb_report():
     path = os.path.join(SCRIPT_DIR, REPORT_FILE)
     ports = []
 
-    with open(path, "r", encoding="utf-16-le") as f:
-        content = f.read()
+    content = read_file_with_encoding(path)
+
+    physical_controllers = parse_physical_controllers(content)
 
     pattern = re.compile(
         r'={20,}.*?USB Port\d+.*?={20,}.*?'
@@ -94,12 +156,12 @@ def parse_usb_report():
     for m in pattern.finditer(content):
         code, text, chain = m.groups()
 
-        if is_companion_port(chain):
+        controller_idx = get_controller_index_from_chain(chain)
+        if controller_idx not in physical_controllers:
             continue
 
         block = content[m.end():m.end() + LOOKAHEAD]
 
-        # Skip virtual/internal ports (not user-connectable)
         if not is_user_connectable(block):
             continue
 
@@ -179,6 +241,7 @@ def main():
         return
 
     write_ports_csv(ports, org_id, pc_id)
+    print(f"Success: {len(ports)} ports exported to {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     main()
