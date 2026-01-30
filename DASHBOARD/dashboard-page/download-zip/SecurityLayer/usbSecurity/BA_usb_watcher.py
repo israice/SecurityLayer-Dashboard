@@ -76,18 +76,13 @@ def extract_device_info(device):
     return info
 
 
-def is_parent_device(pnp_device_id):
-    """Check if device is parent (not a child interface like MI_00, MI_01)."""
-    return pnp_device_id and "&MI_" not in pnp_device_id.upper()
-
-
 def query_usb_devices(wmi_conn):
-    """Query USB devices using WMI connection (parent devices only)."""
+    """Query USB devices using WMI connection (all USB interfaces)."""
     devices = {}
     query = f"SELECT * FROM Win32_PnPEntity WHERE PNPDeviceID LIKE '{USB_PNP_FILTER}'"
     for dev in wmi_conn.query(query):
         pnp_id = getattr(dev, "PNPDeviceID", None)
-        if pnp_id and is_parent_device(pnp_id):
+        if pnp_id:
             devices[pnp_id] = extract_device_info(dev)
     return devices
 
