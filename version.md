@@ -27,7 +27,7 @@ docker logs security-layer-dashboard -f
 </details>
 
 
-git log --oneline -n 10
+git log --oneline -n 20
 
 Copy-Item .env $env:TEMP\.env.backup
 git reset --hard 80f714fc
@@ -39,7 +39,7 @@ git push origin master --force
 
 
 git add .
-git commit -m "v0.1.9 - test 8"
+git commit -m "v0.1.9 - test 9"
 git push
 
 

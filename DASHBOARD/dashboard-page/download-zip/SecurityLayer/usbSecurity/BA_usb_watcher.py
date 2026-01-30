@@ -18,7 +18,7 @@ LOG_FILE = SCRIPT_DIR.parent / "history.log"
 WATCHER_LOCK_FILE = SCRIPT_DIR / "watcher.lock"
 USB_PNP_FILTER = "USB%"
 POLL_INTERVAL_SECONDS = 2
-POST_EVENT_DELAY_SECONDS = 1
+POST_EVENT_DELAY_SECONDS = 0.5
 
 # Logging setup
 logging.basicConfig(
@@ -94,17 +94,16 @@ def log_device_event(event_type, info):
 
 
 def run_script(script_path):
-    """Run external Python script."""
+    """Run external Python script (non-blocking)."""
     try:
         flags = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
-        result = subprocess.run(
+        subprocess.Popen(
             [sys.executable, script_path],
-            capture_output=True, text=True, creationflags=flags
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=flags
         )
-        if result.stdout.strip():
-            logger.info(result.stdout.strip())
-        if result.stderr.strip():
-            logger.warning(f"Script stderr: {result.stderr.strip()}")
+        logger.info(f"Started script: {script_path}")
     except Exception as e:
         logger.error(f"Failed to run script {script_path}: {e}")
 
